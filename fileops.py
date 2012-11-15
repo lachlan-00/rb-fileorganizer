@@ -140,14 +140,7 @@ class MusicFile():
             foundmedia = False
             # Remove empty folders, if any
             if os.path.isdir(sourcedir):
-                if os.listdir(sourcedir) == [] and remove_folders == 'True':
-                    currentdir = sourcedir
-                    self.log.log_processing(INFO + DIR_REMOVED)
-                    while os.listdir(currentdir) == []:
-                        self.log.log_processing('    ' + currentdir)
-                        os.rmdir(currentdir)
-                        currentdir = os.path.split(currentdir)[0]
-                else:
+                if not os.listdir(sourcedir) == []:
                     for files in os.listdir(sourcedir):
                         filelist = files[(files.rfind('.')):]
                         if filelist in RB_MEDIA_TYPES or os.path.isdir(
@@ -166,6 +159,14 @@ class MusicFile():
                                 self.log.log_processing('    ' + mvdest)
                     if foundmedia == True:
                         self.log.log_processing(INFO + STILL_MEDIA)
+                # remove empty folders after moving additional files
+                if os.listdir(sourcedir) == [] and remove_folders == 'True':
+                    currentdir = sourcedir
+                    self.log.log_processing(INFO + DIR_REMOVED)
+                    while os.listdir(currentdir) == []:
+                        self.log.log_processing('    ' + currentdir)
+                        os.rmdir(currentdir)
+                        currentdir = os.path.split(currentdir)[0]
 
     # Get Source and Destination seperately so preview can use the same code
     def get_locations(self, inputstring):
@@ -216,8 +217,12 @@ class MusicFile():
                                     RB.RhythmDBPropType.TRACK_NUMBER)), None])
                 tags.setDiscNum([str(self.entry.get_ulong(
                                     RB.RhythmDBPropType.DISC_NUMBER)), None])
-                tags.setDate(str(self.entry.get_ulong(
-                                    RB.RhythmDBPropType.YEAR)), 0)
+                #tags.setDate(str(self.entry.get_ulong(
+                #                    RB.RhythmDBPropType.YEAR)), 0)
+                tags.setTextFrame('TDRC', str(self.entry.get_ulong(
+                                              RB.RhythmDBPropType.YEAR)))
+                tagy.setTextFrame('TDRL', str(self.entry.get_ulong(
+                                              RB.RhythmDBPropType.YEAR)))
                 tags.setAlbum(album)
                 tags.setTitle(title)
                 tags.setGenre(genre)
@@ -332,3 +337,4 @@ class MusicFile():
             # Non media clean up
             self.file_cleanup(mvsource, mvdestin)
         self.log.log_processing('')
+
