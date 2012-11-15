@@ -1,0 +1,174 @@
+RHYTHMBOX FILEORGANIZER
+=======================
+
+Welcome to version 2.0.1-2!
+
+This is a bug fix release fixing bugs introduced by 2.0.1.
+
+Preview Mode
+ * Files are not moved or changed in any way while in preview mode.
+ * When completed up to two text files will open showing changes or possibly damaged files.
+ * To enable preview mode, set enable it in the preferences window.
+
+Update Tags After Relocation
+ * The plugin now uses python-eyeD3 for checking tag values.
+ * After organising the selected files, fileorganizer will update the mp3 tags for you to ID3v2.4.
+
+Bug Fixes:
+ * #974105 FO fails if eyeD3 is missing
+ * #996165 Failed if 'covers' dir is not found
+ * #1003478 Fileorganizer fails to load
+
+
+1.0 Install
+2.0 Usage & Main Features
+2.1 Other Features
+3.0 Configuration and customisation
+3.1 Compilation Support
+3.2 Plugin Preferences Window
+4.0 Change History
+5.0 Contribute
+
+#######################
+
+1.0 INSTALL
+
+To install the plugin, simply double-click the INSTALL file.
+To unsinstall run the UNINSTALL file.
+
+If you want to install manually, extract to the following directory:
+ * $HOME/.loal/share/rhythmbox/plugins/fileorganizer-gtk3/
+
+#######################
+
+2.0 USAGE & MAIN FEATURES
+
+This plugin is pretty simple but it has a few complicated features under the hood.
+
+Once the plugin is installed, simply enable it in Rhythmbox. A restart of rhythmbox will be required to detect the plugin if it was open when you installed.
+
+When the plugin is enabled, you will notice an option in the right-click menu of music items (like songs) that will read 'Organize selection'. Clicking this will organize the selected files following a defined structure (see 3. Configuration and customisation) for both folders and filenames. Thats all there is to it.
+
+
+2.1 OTHER FEATURES
+
+Intelligent duplicate backup:
+ * When two songs have the same name, the plugin moves the file to a backup directory. 
+ * If you lose a file, you'll probably in a folder named 'backup' in the root of your music library.
+
+Move all non music files with your music:
+ * When enabled, Fiileorganizer will move files like text files and pictures with that music file. 
+ * This is great for keeping all files organised, not just music.
+
+Import cover art into the Rhythmbox cache:
+ * When enabled, the plugin will import cover art that it finds in the music folder. 
+ * The default cache location is: $HOME/.cache/rhythmbox/covers/
+
+Log file for all actions:
+ * The log file is an invaluable tool to see what happens when running fileorganizer. 
+ * By default this file is hidden in your home folder: $HOME/.fileorganizer.log
+
+#######################
+
+3.0 CONFIGURATION AND CUSTOMISATION
+
+The output when running 'Organize Selection' is set from dconf-editor using default Rhythmbox settings:
+ * org.gnome.rhythmbox.library/layout-filename (Is the filename for your output)
+ * org.gnome.rhythmbox.library/layout-path (Is the folder path for your output)
+ * org.gnome.rhythmbox.rhythmdb/locations (Is your library path)
+
+Using these, your final output becomes:
+ * library + layout-path + layout-filename
+
+The Locations setting can actually be multiple locations, the first value is always taken by the plugin.
+
+The Variables for layout_path and layout_filename follow the same values as rhythmbox:
+ * %at -- album title
+ * %aa -- album artist (Album artist will use track artist if it does not exist)
+ * %aA -- album artist (lowercase)
+ * %as -- album artist sortname
+ * %aS -- album artist sortname (lowercase)
+ * %ay -- album release year
+ * %an -- album disc number
+ * %aN -- album disc number, zero padded
+ * %ag -- album genre
+ * %aG -- album genre (lowercase)
+ * %tn -- track number (i.e 8)
+ * %tN -- track number, zero padded (i.e 08)
+ * %tt -- track title
+ * %ta -- track artist
+ * %tA -- track artist (lowercase)
+
+Variables not ported yet:
+ * %ts -- track artist sortname
+ * %tS -- track artist sortname (lowercase)
+
+
+3.1 COMPILATION SUPPORT
+
+Fileorganizer will use the album artist tag which is a part of rhythmbox and replace the artist field. For example:
+ * Path: /music/$artist/$year $album/$disc-$track - $title
+ * Input: /music/new/spawn soundtrack/01 - filter & the crystal method - trip like i do.mp3
+ * Set Album Artist to 'Various' in Rhythmbox.
+ * Output: /music/Various/1997 Spawn/1-01 - Can't You (Trip Like I Do).mp3
+
+
+3.2 PLUGIN PREFERENCES WINDOW
+
+The preferences window gives you the ability to switch features on or off. The 'Enabled' check boxes will obviously disable these features.
+
+Log File:
+ * Set the filename of the log file (stored in your home folder)
+
+Import Cover Art
+ * List of coverart filenames that if found are imported to the rhythmbox cover cache for that album
+
+File/Folder Cleanup
+ * If enabled, files within the same folder that aren't music files are moved as well
+
+Remove Empty Folders
+ * If the source folder is empty after moving, delete the folder
+
+#######################
+
+4.0 CHANGE HISTORY
+
+2.0 features include:
+ * GTK3 Rhythmbox 3/GIT support
+ * Moved settings from Gconf to Gsettings
+ * Random bug fixes
+ * New code base [1]
+
+1.1 features include:
+ * UI Implemented
+ * Configuration File
+ * Import cover art from the source folder to the RB cache if found.
+ * Ability to disable file/folder cleanup and other features.
+
+1.0.3-2 features include:
+ * Fixes to backup support.
+ * UTF-8 encoding support.
+ * Fixed move folder contents with files.
+ * Notification on completion using pynotify.
+ * More code cleanup and additions.
+
+1.0.3 features include:
+ * File management of non music files.
+ * A physical log file stored in the home folder.
+ * Moved the backup folder to the root of the music library.
+ * Compilation support using rhythmbox's album artist field.
+
+1.0.2 features include:
+ * Support for Rhythmbox > 0.13.1
+ * Added $disc and $year support.
+
+#######################
+
+5.0 CONTRIBUTE
+
+To contribute, please refer to our launchpad page [2]
+
+#######################
+
+[1] http://code.launchpad.net/~lachlan-00/rb-fileorganizer/legacy
+[2] Launchpad page: http://launchpad.net/rb-fileorganizer
