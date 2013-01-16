@@ -221,7 +221,7 @@ class MusicFile():
                 #                    RB.RhythmDBPropType.YEAR)), 0)
                 tags.setTextFrame('TDRC', str(self.entry.get_ulong(
                                               RB.RhythmDBPropType.YEAR)))
-                tagy.setTextFrame('TDRL', str(self.entry.get_ulong(
+                tags.setTextFrame('TDRL', str(self.entry.get_ulong(
                                               RB.RhythmDBPropType.YEAR)))
                 tags.setAlbum(album)
                 tags.setTitle(title)
