@@ -219,6 +219,7 @@ class MusicFile():
                                     RB.RhythmDBPropType.DISC_NUMBER)), None])
                 #tags.setDate(str(self.entry.get_ulong(
                 #                    RB.RhythmDBPropType.YEAR)), 0)
+                # Ryan Koesters caught my typo. Cheers!
                 tags.setTextFrame('TDRC', str(self.entry.get_ulong(
                                               RB.RhythmDBPropType.YEAR)))
                 tags.setTextFrame('TDRL', str(self.entry.get_ulong(
