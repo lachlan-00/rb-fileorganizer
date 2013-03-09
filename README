@@ -37,7 +37,7 @@ To install the plugin, simply double-click the INSTALL file.
 To unsinstall run the UNINSTALL file.
 
 If you want to install manually, extract to the following directory:
- * $HOME/.loal/share/rhythmbox/plugins/fileorganizer-gtk3/
+ * $HOME/.local/share/rhythmbox/plugins/fileorganizer/
 
 #######################
 

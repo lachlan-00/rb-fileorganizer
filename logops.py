@@ -20,7 +20,7 @@ class LogFile():
     def __init__(self):
         self.conf = ConfigParser.RawConfigParser()
         conffile = (os.getenv('HOME') + '/.local/share/rhythmbox/' +
-                         'plugins/fileorganizer-gtk3/fo.conf')
+                         'plugins/fileorganizer/fo.conf')
         self.conf.read(conffile)
 
     # Write to log file
