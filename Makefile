@@ -1,16 +1,16 @@
-INSTALLPATH="$(HOME)/.local/share/rhythmbox/plugins/fileorganizer-gtk3/"
+INSTALLPATH="$(HOME)/.local/share/rhythmbox/plugins/fileorganizer/"
 INSTALLTEXT="The Fileorganizer plugin has been installed. You may now restart Rhythmbox and enable the 'Fileorganizer' plugin."
 UNINSTALLTEXT="The Fileorganizer plugin had been removed. The next time you restart Rhythmbox it will dissappear from the plugins list."
 PLUGINFILE="fileorganizer.plugin"
 
 install-req:
 	# Make environment
-	mkdir -p $(INSTALLPATH)
+	mkdir -p $(INSTALLPATH)template
 	# Copy files, forcefully
 	cp $(PLUGINFILE) $(INSTALLPATH) -f
 	cp *.py $(INSTALLPATH) -f
 	cp *.ui $(INSTALLPATH) -f
-	cp *.conf $(INSTALLPATH) -f
+	cp template/*.conf $(INSTALLPATH)template -f
 	cp README $(INSTALLPATH) -f
 	cp UNINSTALL $(INSTALLPATH) -f
 	cp LICENSE $(INSTALLPATH) -f

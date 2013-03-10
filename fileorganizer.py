@@ -13,6 +13,8 @@
 
 import ConfigParser
 import os
+import rb
+import shutil
 
 from gi.repository import GObject, Peas, PeasGtk, Gtk, Notify
 from gi.repository import RB
@@ -49,8 +51,8 @@ ui_str = """
 </ui>
 """
 
-PLUGIN_PATH = '/.local/share/rhythmbox/plugins/fileorganizer-gtk3/'
-CONFIG_FILE = os.getenv('HOME') + PLUGIN_PATH + 'fo.conf'
+PLUGIN_PATH = 'plugins/fileorganizer/'
+CONFIG_FILE = 'fo.conf'
 c = "conf"
 
 
@@ -69,6 +71,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
         shell = self.object
         self.shell = shell
         self.db = shell.props.db
+        self._check_configfile()
         self.menu_build(shell)
 
     # Rhythmbox standard Deactivate method
@@ -83,6 +86,16 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
         self.source = None
 
     # FUNCTIONS
+    # check if configfile is present, if not copy from template folder
+    def _check_configfile(self):
+        self.configfile = RB.find_user_data_file(PLUGIN_PATH + CONFIG_FILE)
+        if not os.path.isfile(self.configfile):
+            template = rb.find_plugin_file(self, 'template/' + CONFIG_FILE)
+            folder = os.path.split(self.configfile)[0]
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+            shutil.copyfile(template, self.configfile)
+    
     # Build menu option
     def menu_build(self, shell):
         self.action = Gtk.Action('OrganizeSelection', _('Organize selection'),
@@ -99,10 +112,11 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
 
     # Create the Configure window in the rhythmbox plugins menu
     def do_create_configure_widget(self):
-        self.ui_file = (os.getenv('HOME') + PLUGIN_PATH + 'config.ui')
+        self.ui_file = rb.find_plugin_file(self, 'config.ui')
         b = Gtk.Builder()
         b.add_from_file(self.ui_file)
-        self.conf.read(CONFIG_FILE)
+        self._check_configfile()
+        self.conf.read(self.configfile)
         window = b.get_object("fileorganizer")
         b.get_object("closebutton").connect('clicked', lambda x:
                                                   window.destroy())
@@ -157,7 +171,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
                       builder.get_object("log_path").get_text())
         self.conf.set(c, "cover_names",
                       builder.get_object("cover_names").get_text())
-        FILE = open(CONFIG_FILE, "w")
+        FILE = open(self.configfile, "w")
         self.conf.write(FILE)
         FILE.close()
 
@@ -171,7 +185,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
 
     # Process selection: Run in Preview Mode or Normal Mode
     def process_selection(self, filelist):
-        self.conf.read(CONFIG_FILE)
+        self.conf.read(self.configfile)
         # Run in Preview Mode
         if self.conf.get(c, "preview_mode") == "True":
             if filelist != []:

@@ -68,7 +68,7 @@ class MusicFile():
     def __init__(self, fileorganizer, db_entry=None):
         self.conf = ConfigParser.RawConfigParser()
         conffile = (os.getenv('HOME') + '/.local/share/rhythmbox/' +
-                         'plugins/fileorganizer-gtk3/fo.conf')
+                         'plugins/fileorganizer/fo.conf')
         self.conf.read(conffile)
         self.rbfo = fileorganizer
         self.rbdb = self.rbfo.db
