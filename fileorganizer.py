@@ -177,9 +177,14 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
 
     # Organize selection
     def organize_selection(self, action, shell):
-        source = shell.get_property("selected_page")
-        entry = RB.Source.get_entry_view(source)
-        selection = entry.get_selected_entries()
+        page = shell.props.selected_page
+        if not hasattr(page, "get_entry_view"):
+            return
+        selected = page.get_entry_view()
+
+        #source = shell.get_property("selected_page")
+        #entry = RB.Source.get_entry_view(source)
+        selection = selected.get_selected_entries()
         self.process_selection(selection)
         #self.organize(selection)
 
