@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """ Fileorganizer tools
 
@@ -37,11 +37,11 @@ def data_filler(files, string):
                 if artisttest == '':
                     string = string.replace(('%' + key),
                                             process(files.get_metadata('ta')))
-                    print string + ' ALBUM ARTIST NOT FOUND'
+                    print(string + ' ALBUM ARTIST NOT FOUND')
                 else:
                     string = string.replace(('%' + key),
                                             process(files.get_metadata(key)))
-                    print string + ' ALBUM ARTIST FOUND'
+                    print(string + ' ALBUM ARTIST FOUND')
             else:
                 string = string.replace(('%' + key),
                                         process(files.get_metadata(key)))

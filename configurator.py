@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """ Configuration (gsettings) handler for Fileorganizer
 
@@ -33,5 +33,5 @@ class FileorganizerConf():
         elif key in RHYTHMBOX_LIBRARY:
             return self.librarysettings[key]
         else:
-            print 'Invalid key requested'
+            print('Invalid key requested')
             return keypath

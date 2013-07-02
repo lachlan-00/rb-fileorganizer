@@ -17,7 +17,8 @@ install-req:
 	cp AUTHORS $(INSTALLPATH) -f
 
 install: install-req
-	$(INSTALLTEXT)
+	@echo
+	@echo $(INSTALLTEXT)
 
 install-gui: install-req
 	# Notify graphically
@@ -28,7 +29,8 @@ uninstall-req:
 	rm -rf $(INSTALLPATH)
 
 uninstall: uninstall-req
-	$(UNINSTALLTEXT)
+	@echo
+	@echo $(UNINSTALLTEXT)
 
 uninstall-gui: uninstall-req
 	# Notify graphically

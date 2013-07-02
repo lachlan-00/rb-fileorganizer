@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
 
 """ Fileorganizer file operations
@@ -31,7 +31,7 @@ try:
     import eyeD3
     EYED3_SUPPORT = True
 except ImportError:
-    print 'Please install python-eyed3 for tag support'
+    print('Please install python-eyed3 for tag support')
     EYED3_SUPPORT = False
 
 
@@ -116,16 +116,16 @@ class MusicFile():
                 try:
                     os.makedirs(os.getenv('HOME') + RB_COVER_CACHE)
                 except:
-                    print 'Create folder Failed'
+                    print('Create folder Failed')
             artfile = '%ta - %at'
             artfile = (tools.data_filler(self, artfile) + '.jpg')
             artfile = os.getenv('HOME') + RB_COVER_CACHE + artfile
             if not os.path.isfile(artfile):
-                print 'COVERART MISSING'
+                print('COVERART MISSING')
                 for filenames in coverart_names:
                     test = os.path.dirname(source) + '/' + filenames
                     if os.path.isfile(test):
-                        print 'COPYING COVERART TO RB CACHE'
+                        print('COPYING COVERART TO RB CACHE')
                         self.log.log_processing(INFO + ART_MOVED)
                         shutil.copyfile(test, artfile)
 
@@ -197,7 +197,7 @@ class MusicFile():
             self.log.log_processing('           Updating File Tags')
             tags = eyeD3.Tag()
             if mimetypes.guess_type(inputfile)[0] == 'audio/mpeg':
-                print 'UPDATING TAGS'
+                print('UPDATING TAGS')
                 artist = (self.entry.get_string(RB.RhythmDBPropType.ARTIST)
                                 ).decode('utf-8')
                 albumartist = (self.entry.get_string(
@@ -251,7 +251,7 @@ class MusicFile():
 
     def preview(self):
         """ Running in preview mode does not chage files in any way """
-        print 'preview'
+        print('preview')
         previewlist = os.getenv('HOME') + '/.fileorganizer-preview.log'
         damagedlist = os.getenv('HOME') + '/.fileorganizer-damaged.log'
         source = self.get_locations('source')
@@ -288,7 +288,7 @@ class MusicFile():
 
         # Relocate, if necessary
         if source == destin:
-            print 'No need for file relocation'
+            print('No need for file relocation')
             self.log.log_processing(INFO + NO_NEED)
         else:
             if os.path.isfile(destin):
@@ -310,13 +310,13 @@ class MusicFile():
                     pass
                 destin = backup
                 self.log.log_processing(CONFLICT + FILE_EXISTS)
-            print 'source   ' + source
-            print 'destin   ' + destin
+            print('source   ' + source)
+            print('destin   ' + destin)
             try:
                 mvsource = source.decode('utf-8')
                 mvdestin = destin.decode('utf-8')
             except TypeError:
-                print 'TYPEERROR'
+                print('TYPEERROR')
                 mvsource = source
                 mvdestin = destin
             shutil.move(mvsource, mvdestin)
@@ -326,10 +326,10 @@ class MusicFile():
             #self.url = UrlData()
             self.location = self.url.set_ascii(urllib.pathname2url(destin))
             self.location = ('file://' + self.location)
-            print 'Relocating file %s to %s' % (source, destin)
+            print('Relocating file %s to %s' % (source, destin))
             self.log.log_processing(INFO + UPDATING)
-            print self.entry.get_string(RB.RhythmDBPropType.LOCATION)
-            print self.location
+            print(self.entry.get_string(RB.RhythmDBPropType.LOCATION))
+            print(self.location)
             # Make the change
             self.rbdb.entry_set(self.entry,
                               RB.RhythmDBPropType.LOCATION, self.location)

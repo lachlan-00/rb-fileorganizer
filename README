@@ -1,23 +1,9 @@
 RHYTHMBOX FILEORGANIZER
 =======================
 
-Welcome to version 2.0.1-2!
+Welcome to version 3!
 
-This is a bug fix release fixing bugs introduced by 2.0.1.
-
-Preview Mode
- * Files are not moved or changed in any way while in preview mode.
- * When completed up to two text files will open showing changes or possibly damaged files.
- * To enable preview mode, set enable it in the preferences window.
-
-Update Tags After Relocation
- * The plugin now uses python-eyeD3 for checking tag values.
- * After organising the selected files, fileorganizer will update the mp3 tags for you to ID3v2.4.
-
-Bug Fixes:
- * #974105 FO fails if eyeD3 is missing
- * #996165 Failed if 'covers' dir is not found
- * #1003478 Fileorganizer fails to load
+Updating this plugin for RB 2.99...
 
 
 1.0 Install
@@ -132,6 +118,15 @@ Remove Empty Folders
 #######################
 
 4.0 CHANGE HISTORY
+
+2.0.1-2 features include:
+Preview Mode
+ * Files are not moved or changed in any way while in preview mode.
+ * When completed up to two text files will open showing changes or possibly damaged files.
+ * To enable preview mode, set enable it in the preferences window.
+Update Tags After Relocation
+ * The plugin now uses python-eyeD3 for checking tag values.
+ * After organising the selected files, fileorganizer will update the mp3 tags for you to 
 
 2.0 features include:
  * GTK3 Rhythmbox 3/GIT support

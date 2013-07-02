@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """ Fileorganizer
 
@@ -16,7 +16,7 @@ import os
 import rb
 import shutil
 
-from gi.repository import GObject, Peas, PeasGtk, Gtk, Notify
+from gi.repository import GObject, Peas, PeasGtk, Gtk, Notify, Gio
 from gi.repository import RB
 
 import fileops
@@ -26,28 +26,33 @@ from configurator import FileorganizerConf
 ui_str = """
 <ui>
   <popup name="BrowserSourceViewPopup">
-    <placeholder name="PluginPlaceholder">
-      <menuitem name="FileorganizerPopup" action="OrganizeSelection"/>
-    </placeholder>
-  </popup>
-
-  <popup name="PlaylistViewPopup">
-    <placeholder name="PluginPlaceholder">
-      <menuitem name="FileorganizerPopup" action="OrganizeSelection"/>
-    </placeholder>
-  </popup>
-
-  <popup name="QueuePlaylistViewPopup">
-    <placeholder name="PluginPlaceholder">
-      <menuitem name="FileorganizerPopup" action="OrganizeSelection"/>
-    </placeholder>
-  </popup>
-
-  <popup name="PodcastViewPopup">
-    <placeholder name="PluginPlaceholder">
-      <menuitem name="FileorganizerPopup" action="OrganizeSelection"/>
-    </placeholder>
-  </popup>
+<interface>
+  <menu id="library-toolbar">
+    <section>
+      <submenu>
+	<attribute name="label" translatable="yes">Edit</attribute>
+	<attribute name="rb-menu-link">edit-menu</attribute>
+	<attribute name="accel">&lt;Alt&gt;e</attribute>
+      </submenu>
+      <item>
+	<attribute name="label" translatable="yes">Browse</attribute>
+	<attribute name="rb-property-bind">show-browser</attribute>
+	<attribute name="accel">&lt;Primary&gt;b</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">View All</attribute>
+	<attribute name="rb-signal-bind">reset-filters</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Import</attribute>
+	<attribute name="action">self.organize_selection</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">library-toolbar</attribute>
+    </section>
+  </menu>
+</interface>
 </ui>
 """
 
@@ -67,7 +72,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
 
     # Rhythmbox standard Activate method
     def do_activate(self):
-        print "activating Fileorganizer"
+        print("activating Fileorganizer")
         shell = self.object
         self.shell = shell
         self.db = shell.props.db
@@ -76,10 +81,8 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
 
     # Rhythmbox standard Deactivate method
     def do_deactivate(self):
-        print "deactivating Fileorganizer"
-        uim = self.shell.props.ui_manager
-        uim.remove_ui(self.ui_id)
-        uim.remove_action_group(self.action_group)
+        print("deactivating Fileorganizer")
+        Gio.Application.get_default().remove_plugin_menu_item('browser-popup', 'selection-organize')
         self.action_group = None
         self.action = None
         #self.source.delete_thyself()
@@ -98,17 +101,21 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
     
     # Build menu option
     def menu_build(self, shell):
-        self.action = Gtk.Action('OrganizeSelection', _('Organize selection'),
-                                 _('Organize the selected music files'),
-                                 'fileorganizer')
-        self.activate_id = self.action.connect('activate',
-                                               self.organize_selection, shell)
-        self.action_group = Gtk.ActionGroup('FileorganizerActions')
-        self.action_group.add_action(self.action)
-        uim = shell.props.ui_manager
-        uim.insert_action_group(self.action_group, 0)
-        self.ui_id = uim.add_ui_from_string(ui_str)
-        uim.ensure_update()
+        app = Gio.Application.get_default()
+
+        # create action
+        action = Gio.SimpleAction(name="organize-selection")
+        action.connect("activate", self.organize_selection)
+        app.add_action(action)
+
+        # create menu item
+        item = Gio.MenuItem()
+        item.set_label("Organize Selection")
+        item.set_detailed_action("app.organize-selection")
+
+        # add plugin menu item
+        app.add_plugin_menu_item('browser-popup', "Organize Selection", item)
+        app.add_action(action)
 
     # Create the Configure window in the rhythmbox plugins menu
     def do_create_configure_widget(self):
@@ -177,7 +184,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
 
     # Organize selection
     def organize_selection(self, action, shell):
-        page = shell.props.selected_page
+        page = self.shell.props.selected_page
         if not hasattr(page, "get_entry_view"):
             return
         selected = page.get_entry_view()
