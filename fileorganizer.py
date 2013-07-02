@@ -23,38 +23,6 @@ import fileops
 
 from configurator import FileorganizerConf
 
-ui_str = """
-<ui>
-  <popup name="BrowserSourceViewPopup">
-<interface>
-  <menu id="library-toolbar">
-    <section>
-      <submenu>
-	<attribute name="label" translatable="yes">Edit</attribute>
-	<attribute name="rb-menu-link">edit-menu</attribute>
-	<attribute name="accel">&lt;Alt&gt;e</attribute>
-      </submenu>
-      <item>
-	<attribute name="label" translatable="yes">Browse</attribute>
-	<attribute name="rb-property-bind">show-browser</attribute>
-	<attribute name="accel">&lt;Primary&gt;b</attribute>
-      </item>
-      <item>
-	<attribute name="label" translatable="yes">View All</attribute>
-	<attribute name="rb-signal-bind">reset-filters</attribute>
-      </item>
-      <item>
-	<attribute name="label" translatable="yes">Import</attribute>
-	<attribute name="action">self.organize_selection</attribute>
-      </item>
-    </section>
-    <section>
-      <attribute name="rb-plugin-menu-link">library-toolbar</attribute>
-    </section>
-  </menu>
-</interface>
-</ui>
-"""
 
 PLUGIN_PATH = 'plugins/fileorganizer/'
 CONFIG_FILE = 'fo.conf'
