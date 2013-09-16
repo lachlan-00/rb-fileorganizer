@@ -18,7 +18,7 @@ import configparser
 class LogFile():
     """ Log file actions. Open, create and edit log files """
     def __init__(self):
-        self.conf = ConfigParser.RawConfigParser()
+        self.conf = configparser.RawConfigParser()
         conffile = (os.getenv('HOME') + '/.local/share/rhythmbox/' +
                          'plugins/fileorganizer/fo.conf')
         self.conf.read(conffile)

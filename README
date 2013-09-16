@@ -25,7 +25,7 @@ To unsinstall run the UNINSTALL file.
 If you want to install manually, extract to the following directory:
  * $HOME/.local/share/rhythmbox/plugins/fileorganizer/
 
-Possible extra requirements re python-configparser and python-eyed3 (when eyed3 is updated to python3)
+Possible extra requirements are python-configparser and python-eyed3 (when eyed3 is updated to python3)
 
 #######################
 

@@ -67,7 +67,7 @@ UPDATING = 'Updating Database:'
 class MusicFile():
     """ Class that performs all the file operations """
     def __init__(self, fileorganizer, db_entry=None):
-        self.conf = ConfigParser.RawConfigParser()
+        self.conf = configparser.RawConfigParser()
         conffile = (os.getenv('HOME') + '/.local/share/rhythmbox/' +
                          'plugins/fileorganizer/fo.conf')
         self.conf.read(conffile)
