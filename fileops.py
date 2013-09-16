@@ -16,7 +16,7 @@ import os
 import shutil
 import urllib
 import time
-import ConfigParser
+import configparser
 import mimetypes
 
 from gi.repository import RB
@@ -27,12 +27,13 @@ from logops import LogFile
 from dbops import UrlData
 
 EYED3_SUPPORT = False
-try:
-    import eyeD3
-    EYED3_SUPPORT = True
-except ImportError:
-    print('Please install python-eyed3 for tag support')
-    EYED3_SUPPORT = False
+###TAG SUPPORT NOT AVAILABLE IN PYTHON3
+###try:
+###    import eyeD3
+###    EYED3_SUPPORT = True
+###except ImportError:
+###    print('Please install python-eyed3 for tag support')
+###    EYED3_SUPPORT = False
 
 
 RB_METATYPES = ('at', 'aa', 'aA', 'as', 'aS', 'ay', 'an', 'aN', 'ag', 'aG',
@@ -192,61 +193,64 @@ class MusicFile():
     #tag operations
     def update_tags(self, inputfile):
         """ Update file tags (if enabled) """
-        update_tags = self.conf.get('conf', 'update_tags')
-        if update_tags == 'True' and EYED3_SUPPORT:
-            self.log.log_processing('           Updating File Tags')
-            tags = eyeD3.Tag()
-            if mimetypes.guess_type(inputfile)[0] == 'audio/mpeg':
-                print('UPDATING TAGS')
-                artist = (self.entry.get_string(RB.RhythmDBPropType.ARTIST)
-                                ).decode('utf-8')
-                albumartist = (self.entry.get_string(
-                                    RB.RhythmDBPropType.ALBUM_ARTIST)
-                                    ).decode('utf-8')
-                album = (self.entry.get_string(RB.RhythmDBPropType.ALBUM)
-                                ).decode('utf-8')
-                title = (self.entry.get_string(RB.RhythmDBPropType.TITLE)
-                                ).decode('utf-8')
-                genre = (self.entry.get_string(RB.RhythmDBPropType.GENRE))
-                tags.link(inputfile)
-                tags.setVersion(eyeD3.ID3_V2_4)
-                tags.setTextEncoding(eyeD3.UTF_8_ENCODING)
-                tags.setArtist(artist)
-                tags.setArtist(albumartist, 'TPE2')
-                tags.setTrackNum([str(self.entry.get_ulong(
-                                    RB.RhythmDBPropType.TRACK_NUMBER)), None])
-                tags.setDiscNum([str(self.entry.get_ulong(
-                                    RB.RhythmDBPropType.DISC_NUMBER)), None])
-                #tags.setDate(str(self.entry.get_ulong(
-                #                    RB.RhythmDBPropType.YEAR)), 0)
-                # Ryan Koesters caught my typo. Cheers!
-                tags.setTextFrame('TDRC', str(self.entry.get_ulong(
-                                              RB.RhythmDBPropType.YEAR)))
-                tags.setTextFrame('TDRL', str(self.entry.get_ulong(
-                                              RB.RhythmDBPropType.YEAR)))
-                tags.setAlbum(album)
-                tags.setTitle(title)
-                tags.setGenre(genre)
-                tags.update(eyeD3.ID3_V2_4)
+        ###TAG SUPPORT NOT AVAILABLE IN PYTHON3
+        ###update_tags = self.conf.get('conf', 'update_tags')
+        update_tags = 'False'
+        ###if update_tags == 'True' and EYED3_SUPPORT:
+        ###    self.log.log_processing('           Updating File Tags')
+        ###    tags = eyeD3.Tag()
+        ###    if mimetypes.guess_type(inputfile)[0] == 'audio/mpeg':
+        ###        print('UPDATING TAGS')
+        ###        artist = (self.entry.get_string(RB.RhythmDBPropType.ARTIST)
+        ###                        ).decode('utf-8')
+        ###        albumartist = (self.entry.get_string(
+        ###                            RB.RhythmDBPropType.ALBUM_ARTIST)
+        ###                            ).decode('utf-8')
+        ###        album = (self.entry.get_string(RB.RhythmDBPropType.ALBUM)
+        ###                        ).decode('utf-8')
+        ###        title = (self.entry.get_string(RB.RhythmDBPropType.TITLE)
+        ###                        ).decode('utf-8')
+        ###        genre = (self.entry.get_string(RB.RhythmDBPropType.GENRE))
+        ###        tags.link(inputfile)
+        ###        tags.setVersion(eyeD3.ID3_V2_4)
+        ###        tags.setTextEncoding(eyeD3.UTF_8_ENCODING)
+        ###        tags.setArtist(artist)
+        ###        tags.setArtist(albumartist, 'TPE2')
+        ###        tags.setTrackNum([str(self.entry.get_ulong(
+        ###                            RB.RhythmDBPropType.TRACK_NUMBER)), None])
+        ###        tags.setDiscNum([str(self.entry.get_ulong(
+        ###                            RB.RhythmDBPropType.DISC_NUMBER)), None])
+        ###        #tags.setDate(str(self.entry.get_ulong(
+        ###        #                    RB.RhythmDBPropType.YEAR)), 0)
+        ###        # Ryan Koesters caught my typo. Cheers!
+        ###        tags.setTextFrame('TDRC', str(self.entry.get_ulong(
+        ###                                      RB.RhythmDBPropType.YEAR)))
+        ###        tags.setTextFrame('TDRL', str(self.entry.get_ulong(
+        ###                                      RB.RhythmDBPropType.YEAR)))
+        ###        tags.setAlbum(album)
+        ###        tags.setTitle(title)
+        ###        tags.setGenre(genre)
+        ###        tags.update(eyeD3.ID3_V2_4)
         return
 
     def check_bad_file(self, inputfile):
         """ Check the input file for missing tags. (MP3 files only) """
+        ###TAG SUPPORT NOT AVAILABLE IN PYTHON3???\
         # Only check MP3's
-        if not mimetypes.guess_type(inputfile)[0] == 'audio/mpeg':
-            return True
-        tags = eyeD3.Tag()
-        tags.link(inputfile)
+        ###if not mimetypes.guess_type(inputfile)[0] == 'audio/mpeg':
+        ###    return True
+        ###tags = eyeD3.Tag()
+        ###tags.link(inputfile)
         #fail on important tags
-        if (tags.getArtist() == '' or tags.getTitle() == ''
-                or tags.getAlbum() == ''):
-            return False
-        if str(tags.getYear()) == 'None':
-            try:
-                if tags.getDate(0)[0].text == '':
-                    return False
-            except TypeError:
-                return False
+        ###if (tags.getArtist() == '' or tags.getTitle() == ''
+        ###        or tags.getAlbum() == ''):
+        ###    return False
+        ###if str(tags.getYear()) == 'None':
+        ###    try:
+        ###        if tags.getDate(0)[0].text == '':
+        ###            return False
+        ###    except TypeError:
+        ###        return False
         return True
 
     def preview(self):

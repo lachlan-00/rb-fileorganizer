@@ -12,7 +12,7 @@
 
 import os
 import codecs
-import ConfigParser
+import configparser
 
 
 class LogFile():
@@ -42,7 +42,7 @@ class LogFile():
                 logline.append(logmessage)
                 files.write((u"".join(logline)) + u"\n")
             except UnicodeDecodeError:
-                print 'LOG UNICODE ERROR'
+                print('LOG UNICODE ERROR')
                 logline = []
                 logline.append(logmessage.decode('utf-8'))
                 files.write((u"".join(logline)) + u"\n")

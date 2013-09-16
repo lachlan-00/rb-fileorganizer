@@ -11,7 +11,7 @@
 """
 
 
-import ConfigParser
+import configparser
 import os
 import rb
 import shutil
@@ -36,7 +36,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
     def __init__(self):
         GObject.Object.__init__(self)
         self.configurator = FileorganizerConf()
-        self.conf = ConfigParser.RawConfigParser()
+        self.conf = configparser.RawConfigParser()
 
     # Rhythmbox standard Activate method
     def do_activate(self):

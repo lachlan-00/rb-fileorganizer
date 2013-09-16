@@ -3,7 +3,7 @@ RHYTHMBOX FILEORGANIZER
 
 Welcome to version 3!
 
-Updating this plugin for RB 2.99...
+Updating this plugin for RB 3.0, Tag support is not available in python3 yet. (python-eyed3)
 
 
 1.0 Install
@@ -24,6 +24,8 @@ To unsinstall run the UNINSTALL file.
 
 If you want to install manually, extract to the following directory:
  * $HOME/.local/share/rhythmbox/plugins/fileorganizer/
+
+Possible extra requirements re python-configparser and python-eyed3 (when eyed3 is updated to python3)
 
 #######################
 
@@ -118,6 +120,10 @@ Remove Empty Folders
 #######################
 
 4.0 CHANGE HISTORY
+
+3.2013.09.16:
+Currently running on RB 3.0
+ * Tag Library python-eyed3 not available for python 3.
 
 2.0.1-2 features include:
 Preview Mode
