@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# coding: utf-8
 
 """ Fileorganizer file operations
 
@@ -14,12 +13,13 @@
 
 import os
 import shutil
-import urllib
 import time
 import configparser
 import mimetypes
 
 from gi.repository import RB
+from urllib.request import url2pathname
+from urllib.request import pathname2url
 
 import tools
 
@@ -173,7 +173,7 @@ class MusicFile():
     def get_locations(self, inputstring):
         """ Get file path for other file operations """
         # Get source for comparison
-        source = urllib.url2pathname(self.location).replace('file:///', '/')
+        source = url2pathname(self.location).replace('file:///', '/')
         if inputstring == 'source':
             return source
         # Set Destination Directory
@@ -317,8 +317,8 @@ class MusicFile():
             print('source   ' + source)
             print('destin   ' + destin)
             try:
-                mvsource = source.decode('utf-8')
-                mvdestin = destin.decode('utf-8')
+                mvsource = source #.decode('utf-8')
+                mvdestin = destin #.decode('utf-8')
             except TypeError:
                 print('TYPEERROR')
                 mvsource = source
@@ -328,7 +328,7 @@ class MusicFile():
 
             # Update Rhythmbox database
             #self.url = UrlData()
-            self.location = self.url.set_ascii(urllib.pathname2url(destin))
+            self.location = self.url.set_ascii(pathname2url(destin))
             self.location = ('file://' + self.location)
             print('Relocating file %s to %s' % (source, destin))
             self.log.log_processing(INFO + UPDATING)
