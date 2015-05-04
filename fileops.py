@@ -66,7 +66,7 @@ UPDATING = 'Updating Database:'
 
 class MusicFile():
     """ Class that performs all the file operations """
-    def __init__(self, fileorganizer, db_entry=None):
+    def __init__(self, fileorganizer, db_entry=None, strip_ntfs=False):
         self.conf = configparser.RawConfigParser()
         conffile = (os.getenv('HOME') + '/.local/share/rhythmbox/' +
                          'plugins/fileorganizer/fo.conf')
@@ -75,6 +75,7 @@ class MusicFile():
         self.rbdb = self.rbfo.db
         self.log = LogFile()
         self.url = UrlData()
+        self.strip_ntfs = strip_ntfs
         if db_entry:
             # Track and disc digits from gconf
             padded = '%s' % ('%0' + str(2) + '.d')
@@ -119,7 +120,7 @@ class MusicFile():
                 except:
                     print('Create folder Failed')
             artfile = '%ta - %at'
-            artfile = (tools.data_filler(self, artfile) + '.jpg')
+            artfile = (tools.data_filler(self, artfile, strip_ntfs=self.strip_ntfs) + '.jpg')
             artfile = os.getenv('HOME') + RB_COVER_CACHE + artfile
             if not os.path.isfile(artfile):
                 print('COVERART MISSING')
@@ -178,11 +179,11 @@ class MusicFile():
             return source
         # Set Destination Directory
         targetdir = '/' + self.rbfo.configurator.get_val('layout-path')
-        targetdir = tools.data_filler(self, targetdir)
+        targetdir = tools.data_filler(self, targetdir, strip_ntfs=self.strip_ntfs)
         targetdir = tools.folderize(self.rbfo.configurator, targetdir)
         # Set Destination  Filename
         targetname = self.rbfo.configurator.get_val('layout-filename')
-        targetname = tools.data_filler(self, targetname)
+        targetname = tools.data_filler(self, targetname, strip_ntfs=self.strip_ntfs)
         targetname += os.path.splitext(self.location)[1]
         # Join destination
         destin = (os.path.join(targetdir, targetname)).replace('file:///', '/')
@@ -283,7 +284,7 @@ class MusicFile():
         # Begin Log File
         currenttime = time.strftime("%I:%M:%S %p", time.localtime())
         logheader = '%ta - %at - '
-        logheader = (tools.data_filler(self, logheader) + currenttime)
+        logheader = (tools.data_filler(self, logheader, strip_ntfs=self.strip_ntfs) + currenttime)
         #self.log = LogFile()
         self.log.log_processing(logheader)
         self.log.log_processing((IN + source))

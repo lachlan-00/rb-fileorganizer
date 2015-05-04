@@ -26,7 +26,7 @@ def folderize(configurator, folder):
 
 
 # Replace the placeholders with the correct values
-def data_filler(files, string):
+def data_filler(files, string, strip_ntfs=False):
     """ replace string data with metadata from current item """
     string = str(string)
     for key in fileops.RB_METATYPES:
@@ -35,20 +35,24 @@ def data_filler(files, string):
                 artisttest = files.get_metadata('aa')
                 if artisttest == '':
                     string = string.replace(('%' + key),
-                                            process(files.get_metadata('ta')))
+                                            process(files.get_metadata('ta'), strip_ntfs))
                     print(string + ' ALBUM ARTIST NOT FOUND')
                 else:
                     string = string.replace(('%' + key),
-                                            process(files.get_metadata(key)))
+                                            process(files.get_metadata(key), strip_ntfs))
                     print(string + ' ALBUM ARTIST FOUND')
             else:
                 string = string.replace(('%' + key),
-                                        process(files.get_metadata(key)))
+                                        process(files.get_metadata(key), strip_ntfs))
     return string
 
 
 # Process names and replace any undesired characters
-def process(string):
+def process(string, strip_ntfs=False):
     """ Prevent / character to avoid creating folders """
     string = string.replace('/', '_')  # if present
+    if strip_ntfs:
+        string = ''.join(c for c in string if c not in '<>:"\\|?*')
+        while string.endswith('.'):
+            string = string[:-1]
     return string
