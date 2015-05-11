@@ -111,6 +111,8 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
             b.get_object("tagsbutton").set_active(True)
         if self.conf.get(c, "preview_mode") == "True":
             b.get_object("previewbutton").set_active(True)
+        if self.conf.get(c, "strip_ntfs") == "True":
+            b.get_object("ntfsbutton").set_active(True)
         window.show_all()
         return window
 
@@ -142,6 +144,10 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
             self.conf.set(c, "preview_mode", "True")
         else:
             self.conf.set(c, "preview_mode", "False")
+        if builder.get_object("ntfsbutton").get_active():
+            self.conf.set(c, "strip_ntfs", "True")
+        else:
+            self.conf.set(c, "strip_ntfs", "False")
         self.conf.set(c, "log_path",
                       builder.get_object("log_path").get_text())
         self.conf.set(c, "cover_names",
@@ -166,6 +172,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
     # Process selection: Run in Preview Mode or Normal Mode
     def process_selection(self, filelist):
         self.conf.read(self.configfile)
+        strip_ntfs = self.conf.get(c, "strip_ntfs") == "True"
         # Run in Preview Mode
         if self.conf.get(c, "preview_mode") == "True":
             if filelist != []:
@@ -176,7 +183,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
                 FILE = open(damlist, "w")
                 FILE.close()
                 for item in filelist:
-                    item = fileops.MusicFile(self, item)
+                    item = fileops.MusicFile(self, item, strip_ntfs=strip_ntfs)
                     item.preview()
                 Notify.init('Fileorganizer')
                 title = 'Fileorganizer'
@@ -187,7 +194,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
                 self.results(prelist, damlist)
         else:
             # Run Normally
-            self.organize(filelist)
+            self.organize(filelist, strip_ntfs)
             Notify.init('Fileorganizer')
             title = 'Fileorganizer'
             note = 'Your selection is organised'
@@ -201,10 +208,10 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
             os.system('/usr/bin/xdg-open ' + damlist)
 
     # Organize array of files
-    def organize(self, filelist):
+    def organize(self, filelist, strip_ntfs=False):
         if filelist != []:
             for item in filelist:
-                item = fileops.MusicFile(self, item)
+                item = fileops.MusicFile(self, item, strip_ntfs=strip_ntfs)
                 item.relocate()
 
 
