@@ -38,7 +38,11 @@ make install
 If you want to install manually, extract to the following directory:
  * $HOME/.local/share/rhythmbox/plugins/fileorganizer/
 
-Possible extra requirements are python-configparser and python-eyed3 (when eyed3 is updated to python3)
+Possible extra requirements are:
+ * python-configparser (I have to confim this but i think it's a default module in python 3.2+)
+ * gir1.2-notify-0.7 (Debian name, GObject notify library)
+
+Please run python3 ./depends_test.py if you are having problems to check that all python libraries are present.
 
 #######################
 
