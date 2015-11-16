@@ -2,16 +2,22 @@ Wolter Hellmund
 	Original Author
 	Everything up to 1.0.1 & Revision 7 [1]
 
-Sharpeee @launchpad.net
+Sharpeee [https://launchpad.net/~sharpeee]
 	Implemented database update upon file relocation. [2]
+
+Fayez [https://github.com/sirfz]
+	added strip_ntfs. [5]
 
 Lachlan de Waard
 	1.0.2 & Revision 8 onwards. [3]
 	GTK3 port and current code. [4]
+        Migrated to github [6]
 
 
 [1] http://code.launchpad.net/~wolterh/rb-fileorganizer/main
 [2] http://bugs.launchpad.net/rb-fileorganizer/+bug/575964
 [3] http://code.launchpad.net/~lachlan-00/rb-fileorganizer/legacy
 [4] http://code.launchpad.net/~lachlan-00/rb-fileorganizer/trunk
+[5] https://github.com/lachlan-00/rb-fileorganizer/pull/8
+[6] https://github.com/lachlan-00/rb-fileorganizer/
 
