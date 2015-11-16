@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# Note that you can execute this script to install the plugin.
-
-make install-gui
-

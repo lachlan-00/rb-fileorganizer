@@ -6,8 +6,10 @@ WARNING, ONGOING DEVELOPMENT VERSION.
 -------------------------------------
 
  * There are a lot of changes incoming as I haven't updated for a long time. (My last commit was Sep 16, 2013!)
- * Please be aware that for the moment this repo may have bugs that i haven't noticed in my testing.
- * I have tested all current features and they work as expected (But that isn't a promise it will be stable for you)
+ * Please be aware that for the moment this repo may have bugs
+   that i haven't noticed in my testing.
+ * I have tested all current features and they work as expected
+   (But that isn't a promise it will be stable for you)
 
 Welcome to version 3.1-dev-01
 
@@ -30,19 +32,21 @@ This was the plugin that really got me excited about python and hopefully someon
 
 1.0 INSTALL
 
-To install the plugin, simply double-click the INSTALL file.
-
-To install from the terminal:
+To install from the terminal using make:
 make install
+
+To check the dependancies, then install using python:
+python3 ./install.py
 
 If you want to install manually, extract to the following directory:
  * $HOME/.local/share/rhythmbox/plugins/fileorganizer/
 
+You can test python dependancies by running:
+python3 -c "import depends_test; depends_test.check()"
+
 Possible extra requirements are:
  * python-configparser (I have to confim this but i think it's a default module in python 3.2+)
  * gir1.2-notify-0.7 (Debian name, GObject notify library)
-
-Please run python3 ./depends_test.py if you are having problems to check that all python libraries are present.
 
 #######################
 
@@ -137,6 +141,17 @@ Remove Empty Folders
 #######################
 
 4.0 CHANGE HISTORY
+
+3.*-dev-*
+ * Added python script install.py to check all imports.
+   (Also added uninstall.py)
+ * Removed older v2.99 zip file
+ * Removed INSTALL & UNINSTALL (these were just calls to make anyway)
+ * Ongoing pylint/refactor changes.
+
+Update 2015/05/05:
+ * added strip_ntfs option (Care of @sirfz)
+   [https://github.com/lachlan-00/rb-fileorganizer/commit/d8cf611f969a1fc250e7348b4e53285d13f950f3]
 
 3.2013.09.16:
 Currently running on RB 3.0

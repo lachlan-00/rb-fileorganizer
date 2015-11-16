@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# Note that this file, like INSTALL, is executable. In fact it is made for you to execute it.
-make uninstall-gui

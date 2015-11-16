@@ -9,27 +9,29 @@
 
 """
 
-clear = False
+def check():
+    """ Importing all libraries used by FileOrganizer """
+    clear = False
+    try:
+        import os
+        import codecs
+        import configparser
+        import shutil
+        import subprocess
+        import time
 
-print('\nImporting all libraries used by FileOrganizer\n')
+        from gi.repository import GObject, Peas, PeasGtk, Gtk, Notify, Gio
 
-try:
-    import os
-    import codecs
-    import configparser
-    import shutil
-    import subprocess
-    import time
+        from gi.repository import RB
 
-    from gi.repository import GObject, Peas, PeasGtk, Gtk, Notify, Gio
+        from urllib.request import url2pathname
+        from urllib.request import pathname2url
+        clear = True
+    except ImportError as errormsg:
+        print('\nDependancy Problem\n\n' + str(errormsg))
 
-    from gi.repository import RB
-
-    from urllib.request import url2pathname
-    from urllib.request import pathname2url
-    clear = True
-except ImportError as errormsg:
-    print('\nDependancy Problem\n\n' + string(errormsg))
-
-if clear:
-    print ('\nYou are good to go!')
+    if clear:
+        print('\nAll FileOrganizer dependancies are satisfied\n')
+        return True
+    else:
+        return False
