@@ -15,12 +15,12 @@ import codecs
 import configparser
 
 
-class LogFile():
+class LogFile(object):
     """ Log file actions. Open, create and edit log files """
     def __init__(self):
         self.conf = configparser.RawConfigParser()
         conffile = (os.getenv('HOME') + '/.local/share/rhythmbox/' +
-                         'plugins/fileorganizer/fo.conf')
+                    'plugins/fileorganizer/fo.conf')
         self.conf.read(conffile)
 
     # Write to log file
@@ -32,8 +32,8 @@ class LogFile():
         # Log if Enabled
         if log_enabled == 'True':
             # Create if missing
-            if not os.path.exists(log_filename) or (
-                os.path.getsize(log_filename) >= 1076072):
+            if not (os.path.exists(log_filename) or
+                    os.path.getsize(log_filename) >= 1076072):
                 files = codecs.open(log_filename, "w", "utf8")
                 files.close()
             files = codecs.open(log_filename, "a", "utf8")

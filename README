@@ -1,9 +1,20 @@
 RHYTHMBOX FILEORGANIZER
 =======================
 
-Welcome to version 3!
+-------------------------------------
+WARNING, ONGOING DEVELOPMENT VERSION.
+-------------------------------------
 
-Updating this plugin for RB 3.0, Tag support is not available in python3 yet. (python-eyed3)
+ * There are a lot of changes incoming as I haven't updated for a long time. (My last commit was Sep 16, 2013!)
+ * Please be aware that for the moment this repo may have bugs that i haven't noticed in my testing.
+ * I have tested all current features and they work as expected (But that isn't a promise it will be stable for you)
+
+Welcome to version 3.1-dev-01
+
+This is my first update in a major refactor and cleanup of the code.
+My end goal is to make it easier for other people to read and understand how it works.
+This was the plugin that really got me excited about python and hopefully someone else gets that same spark!
+
 
 
 1.0 Install
@@ -20,7 +31,9 @@ Updating this plugin for RB 3.0, Tag support is not available in python3 yet. (p
 1.0 INSTALL
 
 To install the plugin, simply double-click the INSTALL file.
-To unsinstall run the UNINSTALL file.
+
+To install from the terminal:
+make install
 
 If you want to install manually, extract to the following directory:
  * $HOME/.local/share/rhythmbox/plugins/fileorganizer/

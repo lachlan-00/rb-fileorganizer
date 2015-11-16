@@ -15,7 +15,7 @@ import os
 import shutil
 import time
 import configparser
-import mimetypes
+#import mimetypes
 
 from gi.repository import RB
 from urllib.request import url2pathname
@@ -64,15 +64,15 @@ DIR_REMOVED = 'Removing empty directory'
 UPDATING = 'Updating Database:'
 
 
-class MusicFile():
+class MusicFile(object):
     """ Class that performs all the file operations """
     def __init__(self, fileorganizer, db_entry=None, strip_ntfs=False):
         self.conf = configparser.RawConfigParser()
         conffile = (os.getenv('HOME') + '/.local/share/rhythmbox/' +
-                         'plugins/fileorganizer/fo.conf')
+                    'plugins/fileorganizer/fo.conf')
         self.conf.read(conffile)
         self.rbfo = fileorganizer
-        self.rbdb = self.rbfo.db
+        self.rbdb = self.rbfo.rbdb
         self.log = LogFile()
         self.url = UrlData()
         self.strip_ntfs = strip_ntfs
@@ -117,10 +117,13 @@ class MusicFile():
             if not os.path.isdir(os.getenv('HOME') + RB_COVER_CACHE):
                 try:
                     os.makedirs(os.getenv('HOME') + RB_COVER_CACHE)
+                except PermissionError:
+                    print('Create folder Failed: Missing permissions to path')
                 except:
                     print('Create folder Failed')
             artfile = '%ta - %at'
-            artfile = (tools.data_filler(self, artfile, strip_ntfs=self.strip_ntfs) + '.jpg')
+            artfile = (tools.data_filler(self, artfile,
+                                         strip_ntfs=self.strip_ntfs) + '.jpg')
             artfile = os.getenv('HOME') + RB_COVER_CACHE + artfile
             if not os.path.isfile(artfile):
                 print('COVERART MISSING')
@@ -153,6 +156,12 @@ class MusicFile():
                             mvsrc = sourcedir + '/' + os.path.basename(files)
                             try:
                                 shutil.move(mvsrc, mvdest)
+                            except FileNotFoundError:
+                                self.log.log_processing(ERROR + 'Moving ' +
+                                                        files)
+                            except PermissionError:
+                                self.log.log_processing(ERROR + 'Moving ' +
+                                                        files)
                             except:
                                 self.log.log_processing(ERROR + 'Moving ' +
                                                         files)
@@ -179,80 +188,19 @@ class MusicFile():
             return source
         # Set Destination Directory
         targetdir = '/' + self.rbfo.configurator.get_val('layout-path')
-        targetdir = tools.data_filler(self, targetdir, strip_ntfs=self.strip_ntfs)
+        targetdir = tools.data_filler(self, targetdir,
+                                      strip_ntfs=self.strip_ntfs)
         targetdir = tools.folderize(self.rbfo.configurator, targetdir)
         # Set Destination  Filename
         targetname = self.rbfo.configurator.get_val('layout-filename')
-        targetname = tools.data_filler(self, targetname, strip_ntfs=self.strip_ntfs)
+        targetname = tools.data_filler(self, targetname,
+                                       strip_ntfs=self.strip_ntfs)
         targetname += os.path.splitext(self.location)[1]
         # Join destination
         destin = (os.path.join(targetdir, targetname)).replace('file:///', '/')
         if inputstring == 'destin':
             return destin
         return
-
-    #tag operations
-    def update_tags(self, inputfile):
-        """ Update file tags (if enabled) """
-        ###TAG SUPPORT NOT AVAILABLE IN PYTHON3
-        ###update_tags = self.conf.get('conf', 'update_tags')
-        update_tags = 'False'
-        ###if update_tags == 'True' and EYED3_SUPPORT:
-        ###    self.log.log_processing('           Updating File Tags')
-        ###    tags = eyeD3.Tag()
-        ###    if mimetypes.guess_type(inputfile)[0] == 'audio/mpeg':
-        ###        print('UPDATING TAGS')
-        ###        artist = (self.entry.get_string(RB.RhythmDBPropType.ARTIST)
-        ###                        ).decode('utf-8')
-        ###        albumartist = (self.entry.get_string(
-        ###                            RB.RhythmDBPropType.ALBUM_ARTIST)
-        ###                            ).decode('utf-8')
-        ###        album = (self.entry.get_string(RB.RhythmDBPropType.ALBUM)
-        ###                        ).decode('utf-8')
-        ###        title = (self.entry.get_string(RB.RhythmDBPropType.TITLE)
-        ###                        ).decode('utf-8')
-        ###        genre = (self.entry.get_string(RB.RhythmDBPropType.GENRE))
-        ###        tags.link(inputfile)
-        ###        tags.setVersion(eyeD3.ID3_V2_4)
-        ###        tags.setTextEncoding(eyeD3.UTF_8_ENCODING)
-        ###        tags.setArtist(artist)
-        ###        tags.setArtist(albumartist, 'TPE2')
-        ###        tags.setTrackNum([str(self.entry.get_ulong(
-        ###                            RB.RhythmDBPropType.TRACK_NUMBER)), None])
-        ###        tags.setDiscNum([str(self.entry.get_ulong(
-        ###                            RB.RhythmDBPropType.DISC_NUMBER)), None])
-        ###        #tags.setDate(str(self.entry.get_ulong(
-        ###        #                    RB.RhythmDBPropType.YEAR)), 0)
-        ###        # Ryan Koesters caught my typo. Cheers!
-        ###        tags.setTextFrame('TDRC', str(self.entry.get_ulong(
-        ###                                      RB.RhythmDBPropType.YEAR)))
-        ###        tags.setTextFrame('TDRL', str(self.entry.get_ulong(
-        ###                                      RB.RhythmDBPropType.YEAR)))
-        ###        tags.setAlbum(album)
-        ###        tags.setTitle(title)
-        ###        tags.setGenre(genre)
-        ###        tags.update(eyeD3.ID3_V2_4)
-        return
-
-    def check_bad_file(self, inputfile):
-        """ Check the input file for missing tags. (MP3 files only) """
-        ###TAG SUPPORT NOT AVAILABLE IN PYTHON3???\
-        # Only check MP3's
-        ###if not mimetypes.guess_type(inputfile)[0] == 'audio/mpeg':
-        ###    return True
-        ###tags = eyeD3.Tag()
-        ###tags.link(inputfile)
-        #fail on important tags
-        ###if (tags.getArtist() == '' or tags.getTitle() == ''
-        ###        or tags.getAlbum() == ''):
-        ###    return False
-        ###if str(tags.getYear()) == 'None':
-        ###    try:
-        ###        if tags.getDate(0)[0].text == '':
-        ###            return False
-        ###    except TypeError:
-        ###        return False
-        return True
 
     def preview(self):
         """ Running in preview mode does not chage files in any way """
@@ -261,11 +209,11 @@ class MusicFile():
         damagedlist = os.getenv('HOME') + '/.fileorganizer-damaged.log'
         source = self.get_locations('source')
         destin = self.get_locations('destin')
-        if not self.check_bad_file(source):
+        if not tools.check_bad_file(source):
             logfile = open(damagedlist, "a")
             logfile.write(POSSIBLE_DAMAGE + source + "\n")
             logfile.write("File Size:  " + str(os.stat(source)[6] / 1024)
-                            + "kb\n\n")
+                          + "kb\n\n")
         elif not source == destin:
             # Write to preview list
             logfile = open(previewlist, "a")
@@ -282,9 +230,10 @@ class MusicFile():
         source = self.get_locations('source')
         destin = self.get_locations('destin')
         # Begin Log File
-        currenttime = time.strftime("%I:%M:%S %p", time.localtime())
+        tmptime = time.strftime("%I:%M:%S %p", time.localtime())
         logheader = '%ta - %at - '
-        logheader = (tools.data_filler(self, logheader, strip_ntfs=self.strip_ntfs) + currenttime)
+        logheader = (tools.data_filler(self, logheader,
+                                       strip_ntfs=self.strip_ntfs) + tmptime)
         #self.log = LogFile()
         self.log.log_processing(logheader)
         self.log.log_processing((IN + source))
@@ -299,7 +248,7 @@ class MusicFile():
             if os.path.isfile(destin):
                 # Copy the existing file to a backup dir
                 backupdir = (((self.rbfo.configurator.get_val('locations'))[0]
-                               + '/backup/').replace('file:///', '/'))
+                              + '/backup/').replace('file:///', '/'))
                 backup = os.path.join(backupdir, os.path.basename(destin))
                 if os.path.isfile(backup):
                     counter = 0
@@ -337,9 +286,9 @@ class MusicFile():
             print(self.location)
             # Make the change
             self.rbdb.entry_set(self.entry,
-                              RB.RhythmDBPropType.LOCATION, self.location)
+                                RB.RhythmDBPropType.LOCATION, self.location)
             self.log.log_processing(OUT + self.location)
-            self.update_tags(mvdestin)
+            tools.update_tags(mvdestin)
             # Non media clean up
             self.file_cleanup(mvsource, mvdestin)
         self.log.log_processing('')

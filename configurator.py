@@ -18,7 +18,7 @@ RHYTHMBOX_RHYTHMDB = 'locations'
 RHYTHMBOX_LIBRARY = {'layout-path', 'layout-filename'}
 
 
-class FileorganizerConf():
+class FileorganizerConf(object):
     """ Class to read RB values using dconf/gsettings """
     def __init__(self):
         self.rhythmdbsettings = Gio.Settings("org.gnome.rhythmbox.rhythmdb")
