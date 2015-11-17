@@ -27,6 +27,7 @@ from configurator import FileorganizerConf
 
 PLUGIN_PATH = 'plugins/fileorganizer/'
 CONFIGFILE = 'fo.conf'
+CONFIGTEMPLATE = 'fo.conf.template'
 UIFILE = 'config.ui'
 C = "conf"
 
@@ -76,7 +77,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
     def _check_configfile(self):
         """ Copy the default config template or load existing config file """
         if not os.path.isfile(self.configfile):
-            template = RB.find_user_data_file(PLUGIN_PATH + CONFIGFILE)
+            template = RB.find_user_data_file(CONFIGTEMPLATE)
             folder = os.path.split(self.configfile)[0]
             if not os.path.exists(folder):
                 os.makedirs(folder)

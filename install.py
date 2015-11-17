@@ -22,11 +22,11 @@ if(depends_test.check()):
     if not os.path.exists(INSTALLPATH):
         os.makedirs(INSTALLPATH)
     # check template directory
-    if not os.path.exists(TEMPLATEPATH):
-        os.makedirs(TEMPLATEPATH)
+    #if not os.path.exists(TEMPLATEPATH):
+    #    os.makedirs(TEMPLATEPATH)
     # copy the base template
-    shutil.copy('template/fo.conf', TEMPLATEPATH)
-    # copy the rest of the plugin
+    #shutil.copy('template/fo.conf', TEMPLATEPATH)
+    # copy the contents of the plugin directory
     for i in os.listdir('./'):
         if os.path.isfile(i):
             shutil.copy(i, INSTALLPATH)

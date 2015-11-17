@@ -149,6 +149,7 @@ Remove Empty Folders
  * Removed INSTALL & UNINSTALL (these were just calls to make anyway)
  * Ongoing pylint/refactor changes.
  * Update config window to remove depreciated widgets. (requires GTK+ 3.0)
+ * Move conf template into base plugin dir
 
 Update 2015/05/05:
  * added strip_ntfs option (Care of @sirfz)
