@@ -16,10 +16,14 @@ import shutil
 import time
 import configparser
 #import mimetypes
+import gi
 
-from gi.repository import RB
 from urllib.request import url2pathname
 from urllib.request import pathname2url
+
+gi.require_version('RB', '3.0')
+
+from gi.repository import RB
 
 import tools
 

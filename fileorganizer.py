@@ -15,6 +15,12 @@ import configparser
 import os
 #import rb
 import shutil
+import gi
+
+gi.require_version('Peas', '1.0')
+gi.require_version('PeasGtk', '1.0')
+gi.require_version('Notify', '0.7')
+gi.require_version('RB', '3.0')
 
 from gi.repository import GObject, Peas, PeasGtk, Gtk, Notify, Gio
 from gi.repository import RB
