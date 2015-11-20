@@ -124,19 +124,31 @@ Fileorganizer will use the album artist tag which is a part of rhythmbox and rep
 
 3.2 PLUGIN PREFERENCES WINDOW
 
-The preferences window gives you the ability to switch features on or off. The 'Enabled' check boxes will obviously disable these features.
+The preferences window gives you the ability to switch features on or off.
+The 'Enabled' check boxes will obviously disable these features is unchecked.
 
-Log File:
- * Set the filename of the log file (stored in your home folder)
-
-Import Cover Art
- * List of coverart filenames that if found are imported to the rhythmbox cover cache for that album
+Preview Mode
+ * If enabled, 'Organize Selection' will only check for changes and open a text report after completion.
 
 File/Folder Cleanup
  * If enabled, files within the same folder that aren't music files are moved as well
 
 Remove Empty Folders
  * If the source folder is empty after moving, delete the folder
+
+Log File:
+ * Set the filename of the log file (the base path is your home folder)
+
+Import Cover Art
+ * List of coverart filenames that if found are imported to the rhythmbox cover cache for that album
+
+Strip NTFS Chars
+ * Strip out characters that Windows can't handle.
+   (NTFS actually supports more characters than Windows allows)
+
+Update File Tags
+ * Currently disable until the migration to Mutagen
+
 
 #######################
 
