@@ -17,11 +17,10 @@ import subprocess
 import fileops
 
 
-# Create a folder if non-existant, and return it
-def folderize(configurator, folder):
+# Create a folder inside a library path if non-existant, and return it
+def folderize(library_path, folder):
     """ Create folders for file operations """
-    dirpath = ((configurator.get_val('locations'))[0] +
-               '/').replace('file:///', '/')
+    dirpath = library_path + '/'
     if not os.path.exists(dirpath + folder):
         os.makedirs(dirpath + folder)
     return os.path.normpath(dirpath + folder)
