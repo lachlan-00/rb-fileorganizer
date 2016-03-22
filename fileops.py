@@ -194,14 +194,16 @@ class MusicFile(object):
         targetdir = '/' + self.rbfo.configurator.get_val('layout-path')
         targetdir = tools.data_filler(self, targetdir,
                                       strip_ntfs=self.strip_ntfs)
-        targetdir = tools.folderize(self.rbfo.configurator, targetdir)
+        targetloc = tools.library_location(self, self.rbfo.configurator.get_val('locations'))
+        targetpath = url2pathname(targetloc).replace('file:///', '/')
+        targetdir = tools.folderize(targetpath, targetdir)
         # Set Destination  Filename
         targetname = self.rbfo.configurator.get_val('layout-filename')
         targetname = tools.data_filler(self, targetname,
                                        strip_ntfs=self.strip_ntfs)
         targetname += os.path.splitext(self.location)[1]
         # Join destination
-        destin = (os.path.join(targetdir, targetname)).replace('file:///', '/')
+        destin = (os.path.join(targetdir, targetname))
         if inputstring == 'destin':
             return destin
         return
@@ -251,8 +253,9 @@ class MusicFile(object):
         else:
             if os.path.isfile(destin):
                 # Copy the existing file to a backup dir
-                backupdir = (((self.rbfo.configurator.get_val('locations'))[0]
-                              + '/backup/').replace('file:///', '/'))
+                backuploc = tools.library_location(self, self.rbfo.configurator.get_val('locations'))
+                backupdir = (url2pathname(backuploc)
+                              + '/backup/').replace('file:///', '/')
                 backup = os.path.join(backupdir, os.path.basename(destin))
                 if os.path.isfile(backup):
                     counter = 0

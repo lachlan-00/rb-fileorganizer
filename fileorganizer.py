@@ -42,6 +42,8 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
     """ Main class that loads fileorganizer into Rhythmbox """
     __gtype_name = 'fileorganizer'
     object = GObject.property(type=GObject.Object)
+    _menu_names = ['browser-popup',
+                  'playlist-popup']
     def __init__(self):
         GObject.Object.__init__(self)
         self.configurator = FileorganizerConf()
@@ -70,9 +72,9 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
     def do_deactivate(self):
         """ Deactivate the plugin """
         print("deactivating Fileorganizer")
-        Gio.Application.get_default().remove_plugin_menu_item('browser-popup',
-                                                              'selection-' +
-                                                              'organize')
+        app = Gio.Application.get_default()
+        for menu_name in Fileorganizer._menu_names:
+            app.remove_plugin_menu_item(menu_name, 'selection-' + 'organize')
         self.action_group = None
         self.action = None
         #self.source.delete_thyself()
@@ -105,7 +107,8 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
         item.set_detailed_action("app.organize-selection")
 
         # add plugin menu item
-        app.add_plugin_menu_item('browser-popup', "Organize Selection", item)
+        for menu_name in Fileorganizer._menu_names:
+            app.add_plugin_menu_item(menu_name, "Organize Selection", item)
         app.add_action(action)
 
     # Create the Configure window in the rhythmbox plugins menu
