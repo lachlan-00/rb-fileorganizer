@@ -32,7 +32,7 @@ class LogFile(object):
         # Log if Enabled
         if log_enabled == 'True':
             # Create if missing
-            if not (os.path.exists(log_filename) or
+            if (not os.path.exists(log_filename) or
                     os.path.getsize(log_filename) >= 1076072):
                 files = codecs.open(log_filename, "w", "utf8")
                 files.close()
