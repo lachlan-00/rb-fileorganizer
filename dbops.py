@@ -68,7 +68,7 @@ class UrlData(object):
         count = 0
         while count < len(self.urlascii):
             string = string.replace(self.urlascii[count], self.urlcode[count])
-            count = count + 1
+            count += 1
         return string
 
     # Replace UTF code vales with Characters
@@ -78,5 +78,5 @@ class UrlData(object):
         while count < len(self.rbdb_rep):
             string = string.replace(self.rbdb_rep[count],
                                     self.rbdb_itm[count])
-            count = count + 1
+            count += 1
         return string

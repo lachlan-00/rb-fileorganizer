@@ -9,6 +9,7 @@
 
 """
 
+
 def check():
     """ Importing all libraries used by FileOrganizer """
     clear = False

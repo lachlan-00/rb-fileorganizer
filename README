@@ -147,7 +147,7 @@ Strip NTFS Chars
    (NTFS actually supports more characters than Windows allows)
 
 Update File Tags
- * Currently disable until the migration to Mutagen
+ * Currently disabled until the migration to Mutagen
 
 
 #######################

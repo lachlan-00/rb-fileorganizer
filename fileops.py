@@ -10,12 +10,11 @@
 
 """
 
-
 import os
 import shutil
 import time
 import configparser
-#import mimetypes
+# import mimetypes
 import gi
 
 from urllib.request import url2pathname
@@ -31,13 +30,13 @@ from logops import LogFile
 from dbops import UrlData
 
 EYED3_SUPPORT = False
-###TAG SUPPORT NOT AVAILABLE IN PYTHON3
-###try:
-###    import eyeD3
-###    EYED3_SUPPORT = True
-###except ImportError:
-###    print('Please install python-eyed3 for tag support')
-###    EYED3_SUPPORT = False
+# TAG SUPPORT NOT AVAILABLE IN PYTHON3
+# try:
+#     import eyeD3
+#     EYED3_SUPPORT = True
+# except ImportError:
+#     print('Please install python-eyed3 for tag support')
+#     EYED3_SUPPORT = False
 
 
 RB_METATYPES = ('at', 'aa', 'aA', 'as', 'aS', 'ay', 'an', 'aN', 'ag', 'aG',
@@ -70,6 +69,7 @@ UPDATING = 'Updating Database:'
 
 class MusicFile(object):
     """ Class that performs all the file operations """
+
     def __init__(self, fileorganizer, db_entry=None, strip_ntfs=False):
         self.conf = configparser.RawConfigParser()
         conffile = (os.getenv('HOME') + '/.local/share/rhythmbox/' +
@@ -153,7 +153,7 @@ class MusicFile(object):
                     for files in os.listdir(sourcedir):
                         filelist = files[(files.rfind('.')):]
                         if filelist in RB_MEDIA_TYPES or os.path.isdir(
-                                sourcedir + '/' + files):
+                                                sourcedir + '/' + files):
                             foundmedia = True
                         elif not destindir == sourcedir:
                             mvdest = destindir + '/' + os.path.basename(files)
@@ -172,13 +172,13 @@ class MusicFile(object):
                             finally:
                                 self.log.log_processing(INFO + 'Moved')
                                 self.log.log_processing('    ' + mvdest)
-                    if foundmedia == True:
+                    if foundmedia:
                         self.log.log_processing(INFO + STILL_MEDIA)
                 # remove empty folders after moving additional files
                 if os.listdir(sourcedir) == [] and remove_folders == 'True':
                     currentdir = sourcedir
                     self.log.log_processing(INFO + DIR_REMOVED)
-                    while os.listdir(currentdir) == []:
+                    while not os.listdir(currentdir):
                         self.log.log_processing('    ' + currentdir)
                         os.rmdir(currentdir)
                         currentdir = os.path.split(currentdir)[0]
@@ -216,8 +216,8 @@ class MusicFile(object):
         if not tools.check_bad_file(source):
             logfile = open(damagedlist, "a")
             logfile.write(POSSIBLE_DAMAGE + source + "\n")
-            logfile.write("File Size:  " + str(os.stat(source)[6] / 1024)
-                          + "kb\n\n")
+            logfile.write("File Size:  " + str(os.stat(source)[6] / 1024) +
+                          "kb\n\n")
         elif not source == destin:
             # Write to preview list
             logfile = open(previewlist, "a")
@@ -238,7 +238,7 @@ class MusicFile(object):
         logheader = '%ta - %at - '
         logheader = (tools.data_filler(self, logheader,
                                        strip_ntfs=self.strip_ntfs) + tmptime)
-        #self.log = LogFile()
+        # self.log = LogFile()
         self.log.log_processing(logheader)
         self.log.log_processing((IN + source))
         # Save cover art if found into Rhythmbox cover cache
@@ -251,17 +251,17 @@ class MusicFile(object):
         else:
             if os.path.isfile(destin):
                 # Copy the existing file to a backup dir
-                backupdir = (((self.rbfo.configurator.get_val('locations'))[0]
-                              + '/backup/').replace('file:///', '/'))
+                backupdir = (((self.rbfo.configurator.get_val('locations'))[0] +
+                              '/backup/').replace('file:///', '/'))
                 backup = os.path.join(backupdir, os.path.basename(destin))
                 if os.path.isfile(backup):
                     counter = 0
                     backuptest = backup
                     while os.path.isfile(backup):
                         backup = backuptest
-                        counter = counter + 1
-                        backup = (backup[:(backup.rfind('.'))] + str(counter)
-                                  + backup[(backup.rfind('.')):])
+                        counter += 1
+                        backup = (backup[:(backup.rfind('.'))] + str(counter) +
+                                  backup[(backup.rfind('.')):])
                 try:
                     os.makedirs(os.path.dirname(backupdir))
                 except OSError:
@@ -271,8 +271,8 @@ class MusicFile(object):
             print('source   ' + source)
             print('destin   ' + destin)
             try:
-                mvsource = source #.decode('utf-8')
-                mvdestin = destin #.decode('utf-8')
+                mvsource = source  # .decode('utf-8')
+                mvdestin = destin  # .decode('utf-8')
             except TypeError:
                 print('TYPEERROR')
                 mvsource = source
@@ -281,7 +281,7 @@ class MusicFile(object):
             self.log.log_processing(OUT + mvdestin)
 
             # Update Rhythmbox database
-            #self.url = UrlData()
+            # self.url = UrlData()
             self.location = self.url.set_ascii(pathname2url(destin))
             self.location = ('file://' + self.location)
             print('Relocating file %s to %s' % (source, destin))
@@ -296,4 +296,3 @@ class MusicFile(object):
             # Non media clean up
             self.file_cleanup(mvsource, mvdestin)
         self.log.log_processing('')
-

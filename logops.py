@@ -38,12 +38,10 @@ class LogFile(object):
                 files.close()
             files = codecs.open(log_filename, "a", "utf8")
             try:
-                logline = []
-                logline.append(logmessage)
+                logline = [logmessage]
                 files.write((u"".join(logline)) + u"\n")
             except UnicodeDecodeError:
                 print('LOG UNICODE ERROR')
-                logline = []
-                logline.append(logmessage.decode('utf-8'))
+                logline = [logmessage.decode('utf-8')]
                 files.write((u"".join(logline)) + u"\n")
             files.close()

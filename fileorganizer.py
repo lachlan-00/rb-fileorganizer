@@ -10,10 +10,9 @@
 
 """
 
-
 import configparser
 import os
-#import rb
+# import rb
 import shutil
 import gi
 
@@ -30,7 +29,6 @@ import tools
 
 from configurator import FileorganizerConf
 
-
 PLUGIN_PATH = 'plugins/fileorganizer/'
 CONFIGFILE = 'fo.conf'
 CONFIGTEMPLATE = 'fo.conf.template'
@@ -42,6 +40,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
     """ Main class that loads fileorganizer into Rhythmbox """
     __gtype_name = 'fileorganizer'
     object = GObject.property(type=GObject.Object)
+
     def __init__(self):
         GObject.Object.__init__(self)
         self.configurator = FileorganizerConf()
@@ -54,7 +53,6 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
         self.action = None
         self.source = None
         self.plugin_info = "fileorganizer"
-
 
     # Rhythmbox standard Activate method
     def do_activate(self):
@@ -75,7 +73,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
                                                               'organize')
         self.action_group = None
         self.action = None
-        #self.source.delete_thyself()
+        # self.source.delete_thyself()
         self.source = None
 
     # FUNCTIONS
@@ -190,11 +188,11 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
             return
         selected = page.get_entry_view()
 
-        #source = shell.get_property("selected_page")
-        #entry = RB.Source.get_entry_view(source)
+        # source = shell.get_property("selected_page")
+        # entry = RB.Source.get_entry_view(source)
         selection = selected.get_selected_entries()
         self.process_selection(selection)
-        #self.organize(selection)
+        # self.organize(selection)
 
     # Process selection: Run in Preview Mode or Normal Mode
     def process_selection(self, filelist):
@@ -203,7 +201,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
         strip_ntfs = self.conf.get(C, "strip_ntfs") == "True"
         # Run in Preview Modelogops
         if self.conf.get(C, "preview_mode") == "True":
-            if filelist != []:
+            if filelist:
                 prelist = os.getenv('HOME') + '/.fileorganizer-preview.log'
                 datafile = open(prelist, "w")
                 datafile.close()
@@ -230,11 +228,10 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
             Notify.Notification.show(notification)
         return
 
-
     # Organize array of files
     def organize(self, filelist, strip_ntfs=False):
         """ get fileops to move media files to the correct location """
-        if filelist != []:
+        if filelist:
             for item in filelist:
                 item = fileops.MusicFile(self, item, strip_ntfs=strip_ntfs)
                 item.relocate()
@@ -243,6 +240,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
 
 class PythonSource(RB.Source):
     """ Register with rhythmbox """
+
     def __init__(self):
         RB.Source.__init__(self)
         GObject.type_register_dynamic(PythonSource)
