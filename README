@@ -125,7 +125,6 @@ Fileorganizer will use the album artist tag which is a part of rhythmbox and rep
 3.2 PLUGIN PREFERENCES WINDOW
 
 The preferences window gives you the ability to switch features on or off.
-The 'Enabled' check boxes will obviously disable these features is unchecked.
 
 Preview Mode
  * If enabled, 'Organize Selection' will only check for changes and open a text report after completion.
