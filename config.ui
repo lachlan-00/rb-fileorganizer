@@ -59,37 +59,37 @@
           </packing>
         </child>
         <child>
+          <object class="GtkLabel" id="toplabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">File Organizer Preferences</property>
+            <attributes>
+              <attribute name="style" value="normal"/>
+              <attribute name="weight" value="semibold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkBox" id="settingsbox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <property name="spacing">5</property>
             <child>
-              <object class="GtkBox" id="box7">
+              <object class="GtkBox" id="previewbox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_left">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkLabel" id="previewlabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="margin_left">12</property>
-                    <property name="label" translatable="yes">Preview Mode</property>
-                    <property name="use_markup">True</property>
-                    <property name="justify">center</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="previewbutton">
-                    <property name="label" translatable="yes">Enabled</property>
+                    <property name="label" translatable="yes">Preview Mode</property>
                     <property name="use_action_appearance">False</property>
                     <property name="width_request">170</property>
                     <property name="visible">True</property>
@@ -113,30 +113,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="box4">
+              <object class="GtkBox" id="cleanupbox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_left">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkLabel" id="cleanlabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="margin_left">12</property>
-                    <property name="label" translatable="yes">File/Folder Cleanup</property>
-                    <property name="use_markup">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="cleanupbutton">
-                    <property name="label" translatable="yes">Enabled</property>
+                    <property name="label" translatable="yes">File/Folder Cleanup</property>
                     <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -159,30 +144,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="box1">
+              <object class="GtkBox" id="removebox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_left">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkLabel" id="removeemptylabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="margin_left">12</property>
-                    <property name="label" translatable="yes">Remove Empty Folders</property>
-                    <property name="use_markup">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="removebutton">
-                    <property name="label" translatable="yes">Enabled</property>
+                    <property name="label" translatable="yes">Remove Empty Folders</property>
                     <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -205,30 +175,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="box2">
+              <object class="GtkBox" id="logbox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_left">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkLabel" id="loglabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="margin_left">12</property>
-                    <property name="label" translatable="yes">Log File</property>
-                    <property name="use_markup">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="logbutton">
-                    <property name="label" translatable="yes">Enabled</property>
+                    <property name="label" translatable="yes">Log File</property>
                     <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -244,10 +199,35 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="log_path">
+                  <object class="GtkBox" id="log_pathbox">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="invisible_char">●</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkLabel" id="log_path_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="xpad">1</property>
+                        <property name="label" translatable="yes">Log File Location:</property>
+                        <property name="justify">fill</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="log_path">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="invisible_char">●</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -263,30 +243,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="box3">
+              <object class="GtkBox" id="coverbox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_left">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkLabel" id="coverlabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="margin_left">12</property>
-                    <property name="label" translatable="yes">Import Cover Art</property>
-                    <property name="use_markup">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="coverbutton">
-                    <property name="label" translatable="yes">Enabled</property>
+                    <property name="label" translatable="yes">Import Cover Art</property>
                     <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -302,10 +267,34 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="cover_names">
+                  <object class="GtkBox" id="cover_namesbox">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="invisible_char">●</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkLabel" id="cover_names_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="xpad">1</property>
+                        <property name="label" translatable="yes">Cover Art Filenames:</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="cover_names">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="invisible_char">●</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -321,30 +310,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="box5">
+              <object class="GtkBox" id="ntfsbox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_left">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkLabel" id="ntfslabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="margin_left">12</property>
-                    <property name="label" translatable="yes">Strip NTFS Chars</property>
-                    <property name="use_markup">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="ntfsbutton">
-                    <property name="label" translatable="yes">Enabled</property>
+                    <property name="label" translatable="yes">Strip NTFS Chars</property>
                     <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -368,30 +342,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="box6">
+              <object class="GtkBox" id="tagsbox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_left">12</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
-                  <object class="GtkLabel" id="taglsabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="margin_left">12</property>
-                    <property name="label" translatable="yes">Update File Tags</property>
-                    <property name="use_markup">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="tagsbutton">
-                    <property name="label" translatable="yes">Enabled</property>
+                    <property name="label" translatable="yes">Update File Tags</property>
                     <property name="use_action_appearance">False</property>
                     <property name="width_request">170</property>
                     <property name="visible">True</property>
