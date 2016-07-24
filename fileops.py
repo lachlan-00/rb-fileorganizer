@@ -212,7 +212,7 @@ class MusicFile(object):
         previewlist = os.getenv('HOME') + '/.fileorganizer-preview.log'
         damagedlist = os.getenv('HOME') + '/.fileorganizer-damaged.log'
         source = self.get_locations('source')
-        destin = self.get_locations('destin')
+        destin = self.url.set_ascii(self.get_locations('destin'))
         if not tools.check_bad_file(source):
             logfile = open(damagedlist, "a")
             logfile.write(POSSIBLE_DAMAGE + source + "\n")
@@ -232,7 +232,7 @@ class MusicFile(object):
         -Update file location in RB database. Update tags (if enabled)
         """
         source = self.get_locations('source')
-        destin = self.get_locations('destin')
+        destin = self.url.set_ascii(self.get_locations('destin'))
         # Begin Log File
         tmptime = time.strftime("%I:%M:%S %p", time.localtime())
         logheader = '%ta - %at - '
