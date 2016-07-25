@@ -20,6 +20,8 @@ import fileops
 def folderize(library_path, folder):
     """ Create folders for file operations """
     dirpath = library_path + '/'
+    # Strip full stops from paths
+    folder = folder.replace('/.', '/_')
     if not os.path.exists(dirpath + folder):
         os.makedirs(dirpath + folder)
     return os.path.normpath(dirpath + folder)
