@@ -8,6 +8,10 @@ Sharpeee [https://launchpad.net/~sharpeee]
 Fayez [https://github.com/sirfz]
 	added strip_ntfs. [5]
 
+alzadude [https://github.com/alzadude]
+         General code fixes
+         Multiple library awareness [12] [13]
+
 Lachlan de Waard
 	1.0.2 & Revision 8 onwards. [3]
 	GTK3 port and current code. [4]
@@ -20,4 +24,6 @@ Lachlan de Waard
 [4] http://code.launchpad.net/~lachlan-00/rb-fileorganizer/trunk
 [5] https://github.com/lachlan-00/rb-fileorganizer/pull/8
 [6] https://github.com/lachlan-00/rb-fileorganizer/
+[7] https://github.com/lachlan-00/rb-fileorganizer/pull/12
+[8] https://github.com/lachlan-00/rb-fileorganizer/pull/13
 

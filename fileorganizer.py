@@ -12,7 +12,6 @@
 
 import configparser
 import os
-# import rb
 import shutil
 import gi
 
@@ -43,8 +42,9 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
     _menu_names = ['browser-popup',
                    'playlist-popup']
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         GObject.Object.__init__(self)
+        super(Fileorganizer, self).__init__(*args, **kwargs)
         self.configurator = FileorganizerConf()
         self.conf = configparser.RawConfigParser()
         self.configfile = RB.find_user_data_file(PLUGIN_PATH + CONFIGFILE)
@@ -70,9 +70,6 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
     def do_deactivate(self):
         """ Deactivate the plugin """
         print("deactivating Fileorganizer")
-        # Gio.Application.get_default().remove_plugin_menu_item('browser-popup',
-        #                                                      'selection-' +
-        #                                                      'organize')
         app = Gio.Application.get_default()
         for menu_name in Fileorganizer._menu_names:
             app.remove_plugin_menu_item(menu_name, 'selection-' + 'organize')
@@ -196,12 +193,8 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
         if not hasattr(page, "get_entry_view"):
             return
         selected = page.get_entry_view()
-
-        # source = shell.get_property("selected_page")
-        # entry = RB.Source.get_entry_view(source)
         selection = selected.get_selected_entries()
         self.process_selection(selection)
-        # self.organize(selection)
 
     # Process selection: Run in Preview Mode or Normal Mode
     def process_selection(self, filelist):

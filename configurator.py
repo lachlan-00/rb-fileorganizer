@@ -13,7 +13,7 @@
 
 from gi.repository import Gio
 
-# Gsettings locations for library and output paths
+# gsettings locations for library and output paths
 RHYTHMBOX_RHYTHMDB = 'locations'
 RHYTHMBOX_LIBRARY = {'layout-path', 'layout-filename'}
 

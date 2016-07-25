@@ -182,7 +182,7 @@ class MusicFile(object):
                         os.rmdir(currentdir)
                         currentdir = os.path.split(currentdir)[0]
 
-    # Get Source and Destination seperately so preview can use the same code
+    # Get Source and Destination separately so preview can use the same code
     def get_locations(self, inputstring):
         """ Get file path for other file operations """
         # Get source for comparison
@@ -208,18 +208,19 @@ class MusicFile(object):
         return
 
     def preview(self):
-        """ Running in preview mode does not chage files in any way """
+        """ Running in preview mode does not change files in any way """
         print('preview')
         previewlist = os.getenv('HOME') + '/.fileorganizer-preview.log'
-        damagedlist = os.getenv('HOME') + '/.fileorganizer-damaged.log'
+        # damagedlist = os.getenv('HOME') + '/.fileorganizer-damaged.log'
         source = self.get_locations('source')
         destin = self.url.set_ascii(self.get_locations('destin'), 0)
-        if not tools.check_bad_file(source):
-            logfile = open(damagedlist, "a")
-            logfile.write(POSSIBLE_DAMAGE + source + "\n")
-            logfile.write("File Size:  " + str(os.stat(source)[6] / 1024) +
-                          "kb\n\n")
-        elif not source == destin:
+        # if not tools.check_bad_file(source):
+        #     logfile = open(damagedlist, "a")
+        #     logfile.write(POSSIBLE_DAMAGE + source + "\n")
+        #     logfile.write("File Size:  " + str(os.stat(source)[6] / 1024) +
+        #                   "kb\n\n")
+        # elif not source == destin:
+        if not source == destin:
             # Write to preview list
             logfile = open(previewlist, "a")
             logfile.write("Change Found:\n" + source + "\n")
@@ -296,7 +297,7 @@ class MusicFile(object):
             self.rbdb.entry_set(self.entry,
                                 RB.RhythmDBPropType.LOCATION, self.location)
             self.log.log_processing(OUT + self.location)
-            tools.update_tags(mvdestin)
+            #tools.update_tags(mvdestin)
             # Non media clean up
             self.file_cleanup(mvsource, mvdestin)
         self.log.log_processing('')
