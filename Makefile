@@ -10,9 +10,8 @@ install-req:
 	cp $(PLUGINFILE) $(INSTALLPATH) -f
 	cp *.py $(INSTALLPATH) -f
 	cp *.ui $(INSTALLPATH) -f
-	cp template/*.conf $(INSTALLPATH)template -f
+	cp *.template $(INSTALLPATH) -f
 	cp README $(INSTALLPATH) -f
-	cp UNINSTALL $(INSTALLPATH) -f
 	cp LICENSE $(INSTALLPATH) -f
 	cp AUTHORS $(INSTALLPATH) -f
 
