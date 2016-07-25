@@ -14,7 +14,6 @@ import os
 import shutil
 import time
 import configparser
-# import mimetypes
 import gi
 
 from urllib.request import url2pathname
@@ -253,7 +252,7 @@ class MusicFile(object):
         else:
             if os.path.isfile(destin):
                 # Copy the existing file to a backup dir
-                #backupdir = (((self.rbfo.configurator.get_val('locations'))[0] +
+                # backupdir = (((self.rbfo.configurator.get_val('locations'))[0] +
                 #              '/backup/').replace('file:///', '/'))
                 tmpdir = (self.rbfo.configurator.get_val('locations'))[0].replace('file:///', '/')
                 tmpdir = self.url.set_ascii(tmpdir, 0)

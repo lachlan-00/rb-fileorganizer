@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" Fileorganizer: test your dependancies
+""" Fileorganizer: test your dependencies
 
     ----------------Authors----------------
     Lachlan de Waard <lachlan.00@gmail.com>
@@ -34,10 +34,10 @@ def check():
         from urllib.request import pathname2url
         clear = True
     except ImportError as errormsg:
-        print('\nDependancy Problem\n\n' + str(errormsg))
+        print('\nDependency Problem\n\n' + str(errormsg))
 
     if clear:
-        print('\nAll FileOrganizer dependancies are satisfied\n')
+        print('\nAll FileOrganizer dependencies are satisfied\n')
         return True
     else:
         return False

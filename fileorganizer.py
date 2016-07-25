@@ -131,7 +131,7 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
         if self.conf.get(C, "cleanup_empty_folders") == "True":
             build.get_object("removebutton").set_active(True)
         # Disabled until update to Mutagen
-        #if self.conf.get(C, "update_tags") == "True":
+        # if self.conf.get(C, "update_tags") == "True":
         #    build.get_object("tagsbutton").set_active(True)
         build.get_object("tagsbutton").set_active(False)
         if self.conf.get(C, "preview_mode") == "True":

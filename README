@@ -34,17 +34,17 @@ This was the plugin that really got me excited about python and hopefully someon
 To install from the terminal using make:
 make install
 
-To check the dependancies, then install using python:
+To check the dependencies, then install using python:
 python3 ./install.py
 
 If you want to install manually, extract to the following directory:
  * $HOME/.local/share/rhythmbox/plugins/fileorganizer/
 
-You can test python dependancies by running:
+You can test python dependencies by running:
 python3 -c "import depends_test; depends_test.check()"
 
 Possible extra requirements are:
- * python-configparser (I have to confim this but i think it's a default module in python 3.2+)
+ * python-configparser (I have to confirm this but i think it's a default module in python 3.2+)
  * gir1.2-notify-0.7 (Debian name, GObject notify library)
  * dconf-editor (to make changes to the rhythmbox library settings)
 
@@ -56,7 +56,7 @@ This plugin is pretty simple but it has a few complicated features under the hoo
 
 Once the plugin is installed, simply enable it in Rhythmbox. A restart of rhythmbox will be required to detect the plugin if it was open when you installed.
 
-When the plugin is enabled, you will notice an option in the right-click menu of music items (like songs) that will read 'Organize selection'. Clicking this will organize the selected files following a defined structure (see 3. Configuration and customisation) for both folders and filenames. Thats all there is to it.
+When the plugin is enabled, you will notice an option in the right-click menu of music items (like songs) that will read 'Organize selection'. Clicking this will organize the selected files following a defined structure (see 3. Configuration and customisation) for both folders and filenames. That's all there is to it.
 
 
 2.1 OTHER FEATURES
@@ -66,7 +66,7 @@ Intelligent duplicate backup:
  * If you lose a file, you'll probably in a folder named 'backup' in the root of your music library.
 
 Move all non music files with your music:
- * When enabled, Fiileorganizer will move files like text files and pictures with that music file. 
+ * When enabled, Fileorganizer will move files like text files and pictures with that music file.
  * This is great for keeping all files organised, not just music.
 
 Import cover art into the Rhythmbox cache:

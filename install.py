@@ -2,7 +2,7 @@
 
 """ FileOrganizer Safe Install Script
 
-    Install if dependancies are satisfied
+    Install if dependencies are satisfied
 
 """
 
