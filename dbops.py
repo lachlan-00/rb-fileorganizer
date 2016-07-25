@@ -58,24 +58,28 @@ class UrlData(object):
 
         self.rbdb_rep = ('%28', '%29', '%2B', '%27', '%2C', '%3A', '%21',
                          '%24', '%26', '%2A', '%2C', '%2D', '%2E', '%3D',
-                         '%40', '%5F', '%7E', '%C3%A8')
+                         '%40', '%5F', '%7E', '%C3%A8', '%20')
         self.rbdb_itm = ('(', ')', '+', "'", ',', ':', '!', '$', '&', '*',
-                         ',', '-', '.', '=', '@', '_', '~','è')
+                         ',', '-', '.', '=', '@', '_', '~','è', ' ')
 
     # Replace Characters with UTF code value
-    def set_url(self, string):
+    def set_url(self, string, length):
         """ Set RhythmDB style string """
         count = 0
-        while count < len(self.urlascii):
+        if length == 0:
+            length = len(self.urlascii)
+        while count < length:
             string = string.replace(self.urlascii[count], self.urlcode[count])
             count += 1
         return string
 
     # Replace UTF code vales with Characters
-    def set_ascii(self, string):
+    def set_ascii(self, string, length):
         """ Change unicode codes back to assci for RhythmDB """
         count = 0
-        while count < len(self.rbdb_rep):
+        if length == 0:
+            length = len(self.rbdb_rep)
+        while count < length:
             string = string.replace(self.rbdb_rep[count],
                                     self.rbdb_itm[count])
             count += 1

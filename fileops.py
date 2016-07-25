@@ -214,7 +214,7 @@ class MusicFile(object):
         previewlist = os.getenv('HOME') + '/.fileorganizer-preview.log'
         damagedlist = os.getenv('HOME') + '/.fileorganizer-damaged.log'
         source = self.get_locations('source')
-        destin = self.url.set_ascii(self.get_locations('destin'))
+        destin = self.url.set_ascii(self.get_locations('destin'), 0)
         if not tools.check_bad_file(source):
             logfile = open(damagedlist, "a")
             logfile.write(POSSIBLE_DAMAGE + source + "\n")
@@ -234,7 +234,7 @@ class MusicFile(object):
         -Update file location in RB database. Update tags (if enabled)
         """
         source = self.get_locations('source')
-        destin = self.url.set_ascii(self.get_locations('destin'))
+        destin = self.url.set_ascii(self.get_locations('destin'), 0)
         # Begin Log File
         tmptime = time.strftime("%I:%M:%S %p", time.localtime())
         logheader = '%ta - %at - '
@@ -253,8 +253,11 @@ class MusicFile(object):
         else:
             if os.path.isfile(destin):
                 # Copy the existing file to a backup dir
-                backupdir = (((self.rbfo.configurator.get_val('locations'))[0] +
-                              '/backup/').replace('file:///', '/'))
+                #backupdir = (((self.rbfo.configurator.get_val('locations'))[0] +
+                #              '/backup/').replace('file:///', '/'))
+                tmpdir = (self.rbfo.configurator.get_val('locations'))[0].replace('file:///', '/')
+                tmpdir = self.url.set_ascii(tmpdir, 0)
+                backupdir = tools.folderize(tmpdir, 'backup/')
                 backup = os.path.join(backupdir, os.path.basename(destin))
                 if os.path.isfile(backup):
                     counter = 0
@@ -284,7 +287,7 @@ class MusicFile(object):
 
             # Update Rhythmbox database
             # self.url = UrlData()
-            self.location = self.url.set_ascii(pathname2url(destin))
+            self.location = self.url.set_ascii(pathname2url(destin), 16)
             self.location = ('file://' + self.location)
             print('Relocating file %s to %s' % (source, destin))
             self.log.log_processing(INFO + UPDATING)
