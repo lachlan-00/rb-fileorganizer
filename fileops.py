@@ -28,15 +28,6 @@ import tools
 from logops import LogFile
 from dbops import UrlData
 
-EYED3_SUPPORT = False
-# TAG SUPPORT NOT AVAILABLE IN PYTHON3
-# try:
-#     import eyeD3
-#     EYED3_SUPPORT = True
-# except ImportError:
-#     print('Please install python-eyed3 for tag support')
-#     EYED3_SUPPORT = False
-
 
 RB_METATYPES = ('at', 'aa', 'aA', 'as', 'aS', 'ay', 'an', 'aN', 'ag', 'aG',
                 'tn', 'tN', 'tt', 'ta', 'tA')
@@ -122,8 +113,9 @@ class MusicFile(object):
                     os.makedirs(os.getenv('HOME') + RB_COVER_CACHE)
                 except PermissionError:
                     print('Create folder Failed: Missing permissions to path')
-                except:
+                except Exception as e:
                     print('Create folder Failed')
+                    print(e)
             artfile = '%ta - %at'
             artfile = (tools.data_filler(self, artfile,
                                          strip_ntfs=self.strip_ntfs) + '.jpg')
@@ -165,9 +157,10 @@ class MusicFile(object):
                             except PermissionError:
                                 self.log.log_processing(ERROR + 'Moving ' +
                                                         files)
-                            except:
+                            except Exception as e:
                                 self.log.log_processing(ERROR + 'Moving ' +
                                                         files)
+                                print(e)
                             finally:
                                 self.log.log_processing(INFO + 'Moved')
                                 self.log.log_processing('    ' + mvdest)
@@ -231,7 +224,7 @@ class MusicFile(object):
     def relocate(self):
         """Performs the actual moving.
         -Move file to correct place and cover art to RB cache (if enabled)
-        -Update file location in RB database. Update tags (if enabled)
+        -Update file location in RB database.
         """
         source = self.get_locations('source')
         destin = self.url.set_ascii(self.get_locations('destin'), 0)
@@ -297,7 +290,6 @@ class MusicFile(object):
             self.rbdb.entry_set(self.entry,
                                 RB.RhythmDBPropType.LOCATION, self.location)
             self.log.log_processing(OUT + self.location)
-            #tools.update_tags(mvdestin)
             # Non media clean up
             self.file_cleanup(mvsource, mvdestin)
         self.log.log_processing('')

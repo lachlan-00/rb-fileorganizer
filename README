@@ -145,13 +145,14 @@ Strip NTFS Chars
  * Strip out characters that Windows can't handle.
    (NTFS actually supports more characters than Windows allows)
 
-Update File Tags
- * Currently disabled until the migration to Mutagen
 
 
 #######################
 
 4.0 CHANGE HISTORY
+
+3.*-dev-*
+ * Removed tag update options and code
 
 3.*-dev-*
  * Added python script install.py to check all imports.

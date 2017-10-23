@@ -134,10 +134,6 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
             build.get_object("cleanupbutton").set_active(True)
         if self.conf.get(C, "cleanup_empty_folders") == "True":
             build.get_object("removebutton").set_active(True)
-        # Disabled until update to Mutagen
-        # if self.conf.get(C, "update_tags") == "True":
-        #    build.get_object("tagsbutton").set_active(True)
-        build.get_object("tagsbutton").set_active(False)
         if self.conf.get(C, "preview_mode") == "True":
             build.get_object("previewbutton").set_active(True)
         if self.conf.get(C, "strip_ntfs") == "True":
@@ -166,10 +162,6 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
             self.conf.set(C, "cleanup_empty_folders", "True")
         else:
             self.conf.set(C, "cleanup_empty_folders", "False")
-        if builder.get_object("tagsbutton").get_active():
-            self.conf.set(C, "update_tags", "True")
-        else:
-            self.conf.set(C, "update_tags", "False")
         if builder.get_object("previewbutton").get_active():
             self.conf.set(C, "preview_mode", "True")
         else:
