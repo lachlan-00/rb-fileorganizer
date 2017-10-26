@@ -124,12 +124,8 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
         build.get_object("savebutton").connect('clicked', lambda x:
                                                self.save_config(build))
         build.get_object("log_path").set_text(self.conf.get(C, "log_path"))
-        build.get_object("cover_names").set_text(self.conf.get(C,
-                                                               "cover_names"))
         if self.conf.get(C, "log_enabled") == "True":
             build.get_object("logbutton").set_active(True)
-        if self.conf.get(C, "cover_enabled") == "True":
-            build.get_object("coverbutton").set_active(True)
         if self.conf.get(C, "cleanup_enabled") == "True":
             build.get_object("cleanupbutton").set_active(True)
         if self.conf.get(C, "cleanup_empty_folders") == "True":
@@ -147,11 +143,6 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
             self.conf.set(C, "log_enabled", "True")
         else:
             self.conf.set(C, "log_enabled", "False")
-
-        if builder.get_object("coverbutton").get_active():
-            self.conf.set(C, "cover_enabled", "True")
-        else:
-            self.conf.set(C, "cover_enabled", "False")
 
         if builder.get_object("cleanupbutton").get_active():
             self.conf.set(C, "cleanup_enabled", "True")
@@ -172,8 +163,6 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
             self.conf.set(C, "strip_ntfs", "False")
         self.conf.set(C, "log_path",
                       builder.get_object("log_path").get_text())
-        self.conf.set(C, "cover_names",
-                      builder.get_object("cover_names").get_text())
         datafile = open(self.configfile, "w")
         self.conf.write(datafile)
         datafile.close()

@@ -1,6 +1,9 @@
 RHYTHMBOX FILEORGANIZER
 =======================
 
+Please help with testing this new release!
+A lot of big changes have happened  that need testing before i can be comfortable with a stable release.
+
 -------------------------------------
 WARNING, ONGOING DEVELOPMENT VERSION.
 -------------------------------------
@@ -10,11 +13,20 @@ WARNING, ONGOING DEVELOPMENT VERSION.
  * I have tested all current features and they work as expected
    (But that isn't a promise it will be stable for you)
 
-Welcome to version 3.1-dev-05
+Welcome to version 3.91-dev
 
-This is my first update in a major refactor and cleanup of the code.
-My end goal is to make it easier for other people to read and understand how it works.
-This was the plugin that really got me excited about python and hopefully someone else gets that same spark!
+This update removes a lot of code that doesn't have any real purpose in the current rhythmbox.
+
+I have dropped dbops.py and simplified the database naming using urllib.parse.
+
+We no longer look for cover art as this has changed from older versions of rhythmbox.
+
+Instead of updating tags this feature is removed.
+
+So far in testing the changes are setting correct paths but the files are sometimes becoming 'missing'
+The files move and update but I think this may be due to my large library (180,000)
+and that testing has been done over sshfs as well as local files.
+
 
 
 
@@ -69,9 +81,6 @@ Move all non music files with your music:
  * When enabled, Fileorganizer will move files like text files and pictures with that music file.
  * This is great for keeping all files organised, not just music.
 
-Import cover art into the Rhythmbox cache:
- * When enabled, the plugin will import cover art that it finds in the music folder. 
- * The default cache location is: $HOME/.cache/rhythmbox/covers/
 
 Log file for all actions:
  * The log file is an invaluable tool to see what happens when running fileorganizer. 
@@ -138,9 +147,6 @@ Remove Empty Folders
 Log File:
  * Set the filename of the log file (the base path is your home folder)
 
-Import Cover Art
- * List of coverart filenames that if found are imported to the rhythmbox cover cache for that album
-
 Strip NTFS Chars
  * Strip out characters that Windows can't handle.
    (NTFS actually supports more characters than Windows allows)
@@ -151,8 +157,10 @@ Strip NTFS Chars
 
 4.0 CHANGE HISTORY
 
-3.*-dev-*
+3.99*-dev-*
  * Removed tag update options and code
+ * Removed cover art import, the naming/format has changed
+ * Using urllib.parse to encode DB imports
 
 3.*-dev-*
  * Added python script install.py to check all imports.
@@ -213,9 +221,9 @@ Update Tags After Relocation
 
 5.0 CONTRIBUTE
 
-To contribute, please refer to our launchpad page [2]
+To contribute, please refer to our github page [2]
 
 #######################
 
 [1] http://code.launchpad.net/~lachlan-00/rb-fileorganizer/legacy
-[2] Launchpad page: http://launchpad.net/rb-fileorganizer
+[2] https://github.com/lachlan-00/rb-fileorganizer

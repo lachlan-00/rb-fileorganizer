@@ -15,9 +15,7 @@ import shutil
 import time
 import configparser
 import gi
-
-from urllib.request import url2pathname
-from urllib.request import pathname2url
+import urllib.parse
 
 gi.require_version('RB', '3.0')
 
@@ -26,12 +24,10 @@ from gi.repository import RB
 import tools
 
 from logops import LogFile
-from dbops import UrlData
 
 
 RB_METATYPES = ('at', 'aa', 'aA', 'as', 'aS', 'ay', 'an', 'aN', 'ag', 'aG',
                 'tn', 'tN', 'tt', 'ta', 'tA')
-RB_COVER_CACHE = '/.cache/rhythmbox/covers/'
 RB_MEDIA_TYPES = ['.m4a', '.flac', '.ogg', '.mp2', '.mp3', '.wav', '.spx']
 
 PROP = [RB.RhythmDBPropType.ALBUM, RB.RhythmDBPropType.ALBUM_ARTIST,
@@ -52,7 +48,6 @@ NO_NEED = 'No need for file relocation'
 STILL_MEDIA = 'Directory still contains media; keeping:'
 FILE_EXISTS = 'File exists, directing to backup folder'
 POSSIBLE_DAMAGE = "Source file damaged or missing tag information.\n"
-ART_MOVED = 'Cover art moved to cache folder'
 DIR_REMOVED = 'Removing empty directory'
 UPDATING = 'Updating Database:'
 
@@ -68,7 +63,7 @@ class MusicFile(object):
         self.rbfo = fileorganizer
         self.rbdb = self.rbfo.rbdb
         self.log = LogFile()
-        self.url = UrlData()
+        # self.url = UrlData()
         self.strip_ntfs = strip_ntfs
         if db_entry:
             # Track and disc digits from gconf
@@ -93,6 +88,24 @@ class MusicFile(object):
             }
             self.location = db_entry.get_string(RB.RhythmDBPropType.LOCATION)
             self.entry = db_entry
+            self.rbdb_rep = ('%28', '%29', '%2B', '%27', '%2C', '%3A', '%21',
+                             '%24', '%26', '%2A', '%2C', '%2D', '%2E', '%3D',
+                             '%40', '%5F', '%7E', '%C3%A8')
+            self.rbdb_itm = ('(', ')', '+', "'", ',', ':', '!',
+                             '$', '&', '*', ',', '-', '.', '=',
+                             '@', '_', '~', 'è')
+
+    def set_ascii(self, string):
+        """ Change unicode codes back to ascii for RhythmDB
+        RythmDB doesn't use a full URL for file path
+        """
+        count = 0
+        while count < len(self.rbdb_rep):
+            string = string.replace(self.rbdb_rep[count],
+                                    self.rbdb_itm[count])
+            count += 1
+
+        return string
 
     # Returns metadata of the music file
     def get_metadata(self, key):
@@ -100,34 +113,6 @@ class MusicFile(object):
         for datum in self.metadata:
             if key == datum:
                 return self.metadata[datum]
-
-    # Rhythmbox coverart
-    def set_rb_coverart(self, source):
-        """ Copies cover art from the file location to the RB cache """
-        coverart_enabled = self.conf.get('conf', 'cover_enabled')
-        coverart_names = self.conf.get('conf', 'cover_names')
-        coverart_names = coverart_names.split(',')
-        if coverart_enabled == 'True':
-            if not os.path.isdir(os.getenv('HOME') + RB_COVER_CACHE):
-                try:
-                    os.makedirs(os.getenv('HOME') + RB_COVER_CACHE)
-                except PermissionError:
-                    print('Create folder Failed: Missing permissions to path')
-                except Exception as e:
-                    print('Create folder Failed')
-                    print(e)
-            artfile = '%ta - %at'
-            artfile = (tools.data_filler(self, artfile,
-                                         strip_ntfs=self.strip_ntfs) + '.jpg')
-            artfile = os.getenv('HOME') + RB_COVER_CACHE + artfile
-            if not os.path.isfile(artfile):
-                print('COVERART MISSING')
-                for filenames in coverart_names:
-                    test = os.path.dirname(source) + '/' + filenames
-                    if os.path.isfile(test):
-                        print('COPYING COVERART TO RB CACHE')
-                        self.log.log_processing(INFO + ART_MOVED)
-                        shutil.copyfile(test, artfile)
 
     # Non media clean up
     def file_cleanup(self, source, destin):
@@ -179,15 +164,15 @@ class MusicFile(object):
     def get_locations(self, inputstring):
         """ Get file path for other file operations """
         # Get source for comparison
-        source = url2pathname(self.location).replace('file:///', '/')
+        source = self.location.replace('file:///', '/')
         if inputstring == 'source':
-            return source
+            return urllib.parse.unquote(source)
         # Set Destination Directory
         targetdir = '/' + self.rbfo.configurator.get_val('layout-path')
         targetdir = tools.data_filler(self, targetdir,
                                       strip_ntfs=self.strip_ntfs)
         targetloc = self.rbfo.configurator.get_val('locations')[0]
-        targetpath = url2pathname(targetloc).replace('file:///', '/')
+        targetpath = targetloc.replace('file:///', '/')
         targetdir = tools.folderize(targetpath, targetdir)
         # Set Destination  Filename
         targetname = self.rbfo.configurator.get_val('layout-filename')
@@ -195,24 +180,17 @@ class MusicFile(object):
                                        strip_ntfs=self.strip_ntfs)
         targetname += os.path.splitext(self.location)[1]
         # Join destination
-        destin = (os.path.join(targetdir, targetname))
         if inputstring == 'destin':
-            return destin
+            return urllib.parse.unquote((os.path.join(targetdir, targetname)))
         return
 
     def preview(self):
         """ Running in preview mode does not change files in any way """
         print('preview')
         previewlist = os.getenv('HOME') + '/.fileorganizer-preview.log'
-        # damagedlist = os.getenv('HOME') + '/.fileorganizer-damaged.log'
+        damagedlist = os.getenv('HOME') + '/.fileorganizer-damaged.log'
         source = self.get_locations('source')
-        destin = self.url.set_ascii(self.get_locations('destin'), 0)
-        # if not tools.check_bad_file(source):
-        #     logfile = open(damagedlist, "a")
-        #     logfile.write(POSSIBLE_DAMAGE + source + "\n")
-        #     logfile.write("File Size:  " + str(os.stat(source)[6] / 1024) +
-        #                   "kb\n\n")
-        # elif not source == destin:
+        destin = urllib.parse.unquote(self.get_locations('destin'))
         if not source == destin:
             # Write to preview list
             logfile = open(previewlist, "a")
@@ -223,11 +201,11 @@ class MusicFile(object):
     # Moves the file to a specific location with a specific name
     def relocate(self):
         """Performs the actual moving.
-        -Move file to correct place and cover art to RB cache (if enabled)
+        -Move file to correct place
         -Update file location in RB database.
         """
         source = self.get_locations('source')
-        destin = self.url.set_ascii(self.get_locations('destin'), 0)
+        destin = urllib.parse.unquote(self.get_locations('destin'))
         # Begin Log File
         tmptime = time.strftime("%I:%M:%S %p", time.localtime())
         logheader = '%ta - %at - '
@@ -236,8 +214,6 @@ class MusicFile(object):
         # self.log = LogFile()
         self.log.log_processing(logheader)
         self.log.log_processing((IN + source))
-        # Save cover art if found into Rhythmbox cover cache
-        self.set_rb_coverart(source)
 
         # Relocate, if necessary
         if source == destin:
@@ -246,10 +222,8 @@ class MusicFile(object):
         else:
             if os.path.isfile(destin):
                 # Copy the existing file to a backup dir
-                # backupdir = (((self.rbfo.configurator.get_val('locations'))[0] +
-                #              '/backup/').replace('file:///', '/'))
                 tmpdir = (self.rbfo.configurator.get_val('locations'))[0].replace('file:///', '/')
-                tmpdir = self.url.set_ascii(tmpdir, 0)
+                tmpdir = urllib.parse.unquote(tmpdir)
                 backupdir = tools.folderize(tmpdir, 'backup/')
                 backup = os.path.join(backupdir, os.path.basename(destin))
                 if os.path.isfile(backup):
@@ -260,36 +234,37 @@ class MusicFile(object):
                         counter += 1
                         backup = (backup[:(backup.rfind('.'))] + str(counter) +
                                   backup[(backup.rfind('.')):])
-                try:
-                    os.makedirs(os.path.dirname(backupdir))
-                except OSError:
-                    pass
+                    try:
+                        os.makedirs(os.path.dirname(backupdir))
+                    except OSError:
+                        pass
+                    try:
+                        shutil.move(source, backup)
+                        self.log.log_processing(CONFLICT + FILE_EXISTS)
+                        self.log.log_processing(OUT + backup)
+                    except FileNotFoundError:
+                        # we found a duplicate in the DB
+                        pass
                 destin = backup
-                self.log.log_processing(CONFLICT + FILE_EXISTS)
-            print('source   ' + source)
-            print('destin   ' + destin)
-            try:
-                mvsource = source  # .decode('utf-8')
-                mvdestin = destin  # .decode('utf-8')
-            except TypeError:
-                print('TYPEERROR')
-                mvsource = source
-                mvdestin = destin
-            shutil.move(mvsource, mvdestin)
-            self.log.log_processing(OUT + mvdestin)
+            else:
+                # Move the file to desired destination
+                shutil.move(source, destin)
+                self.log.log_processing(OUT + destin)
 
             # Update Rhythmbox database
-            # self.url = UrlData()
-            self.location = self.url.set_ascii(pathname2url(destin), 16)
+            self.location = urllib.parse.quote(destin)
             self.location = ('file://' + self.location)
-            print('Relocating file %s to %s' % (source, destin))
+            self.location = self.set_ascii(self.location)
+            print('Relocating file \n%s to\n%s' % (source, destin))
             self.log.log_processing(INFO + UPDATING)
             print(self.entry.get_string(RB.RhythmDBPropType.LOCATION))
             print(self.location)
+            self.log.log_processing(IN + self.entry.get_string(RB.RhythmDBPropType.LOCATION))
+            self.log.log_processing(OUT + self.location)
             # Make the change
             self.rbdb.entry_set(self.entry,
-                                RB.RhythmDBPropType.LOCATION, self.location)
-            self.log.log_processing(OUT + self.location)
+                                RB.RhythmDBPropType.LOCATION,
+                                self.location)
             # Non media clean up
-            self.file_cleanup(mvsource, mvdestin)
+            self.file_cleanup(source, destin)
         self.log.log_processing('')

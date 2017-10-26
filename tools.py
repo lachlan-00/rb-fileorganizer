@@ -54,12 +54,12 @@ def data_filler(files, string, strip_ntfs=False):
                     string = string.replace(('%' + key),
                                             process(files.get_metadata('ta'),
                                                     strip_ntfs))
-                    print(string + ' ALBUM ARTIST NOT FOUND')
+                    # print(string + ' ALBUM ARTIST NOT FOUND')
                 else:
                     string = string.replace(('%' + key),
                                             process(files.get_metadata(key),
                                                     strip_ntfs))
-                    print(string + ' ALBUM ARTIST FOUND')
+                    # print(string + ' ALBUM ARTIST FOUND')
             else:
                 string = string.replace(('%' + key),
                                         process(files.get_metadata(key),

@@ -21,6 +21,7 @@ def check():
         import subprocess
         import time
         import gi
+        import urllib.parse
 
         gi.require_version('Peas', '1.0')
         gi.require_version('PeasGtk', '1.0')
@@ -30,8 +31,6 @@ def check():
         from gi.repository import GObject, Peas, PeasGtk, Gtk, Notify, Gio
         from gi.repository import RB
 
-        from urllib.request import url2pathname
-        from urllib.request import pathname2url
         clear = True
     except ImportError as errormsg:
         print('\nDependency Problem\n\n' + str(errormsg))
