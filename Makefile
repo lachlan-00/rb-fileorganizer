@@ -5,12 +5,12 @@ PLUGINFILE="fileorganizer.plugin"
 
 install-req:
 	# Make environment
-	mkdir -p $(INSTALLPATH)template
+	mkdir -p $(INSTALLPATH)
 	# Copy files, forcefully
 	cp $(PLUGINFILE) $(INSTALLPATH) -f
 	cp *.py $(INSTALLPATH) -f
-	cp *.ui $(INSTALLPATH) -f
-	cp *.template $(INSTALLPATH) -f
+	cp config.ui $(INSTALLPATH) -f
+	cp fo.conf.template $(INSTALLPATH) -f
 	cp README $(INSTALLPATH) -f
 	cp LICENSE $(INSTALLPATH) -f
 	cp AUTHORS $(INSTALLPATH) -f
