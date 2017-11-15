@@ -38,10 +38,10 @@ and that testing has been done over sshfs as well as local files.
 3.2 Plugin Preferences Window
 4.0 Change History
 5.0 Contribute
-
-#######################
+6.0 Links
 
 1.0 INSTALL
+-----------
 
 To install from the terminal using make:
 make install
@@ -60,9 +60,9 @@ Possible extra requirements are:
  * gir1.2-notify-0.7 (Debian name, GObject notify library)
  * dconf-editor (to make changes to the rhythmbox library settings)
 
-#######################
 
 2.0 USAGE & MAIN FEATURES
+-------------------------
 
 This plugin is pretty simple but it has a few complicated features under the hood.
 
@@ -86,9 +86,9 @@ Log file for all actions:
  * The log file is an invaluable tool to see what happens when running fileorganizer. 
  * By default this file is hidden in your home folder: $HOME/.fileorganizer.log
 
-#######################
 
 3.0 CONFIGURATION AND CUSTOMISATION
+-----------------------------------
 
 The output when running 'Organize Selection' is set from dconf-editor using default Rhythmbox settings:
  * org.gnome.rhythmbox.library/layout-filename (Is the filename for your output)
@@ -153,9 +153,8 @@ Strip NTFS Chars
 
 
 
-#######################
-
 4.0 CHANGE HISTORY
+------------------
 
 3.99*-dev-*
  * Removed tag update options and code
@@ -217,13 +216,15 @@ Update Tags After Relocation
  * Support for Rhythmbox > 0.13.1
  * Added $disc and $year support.
 
-#######################
 
 5.0 CONTRIBUTE
+--------------
 
 To contribute, please refer to our github page [2]
 
-#######################
+
+6.0 LINKS
+---------
 
 [1] http://code.launchpad.net/~lachlan-00/rb-fileorganizer/legacy
 [2] https://github.com/lachlan-00/rb-fileorganizer
