@@ -1,3 +1,9 @@
+Development Stop
+================
+
+Hi everyone, I took over this plugin many years ago and have since moved on to other methods of maintaining my library. If someone wants to fork it and take over i'm happy to let this go as i don't have the need for this plugin anymore.
+
+
 RHYTHMBOX FILEORGANIZER
 =======================
 
