@@ -11,7 +11,7 @@ install-req:
 	cp *.py $(INSTALLPATH) -f
 	cp config.ui $(INSTALLPATH) -f
 	cp fo.conf.template $(INSTALLPATH) -f
-	cp README $(INSTALLPATH) -f
+	cp README.md $(INSTALLPATH) -f
 	cp LICENSE $(INSTALLPATH) -f
 	cp AUTHORS $(INSTALLPATH) -f
 
