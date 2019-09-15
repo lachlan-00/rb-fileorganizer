@@ -118,11 +118,6 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
         self._check_configfile()
         self.conf.read(self.configfile)
         window = build.get_object("fileorganizer")
-        build.get_object("closebutton").connect('clicked',
-                                                lambda x:
-                                                window.destroy())
-        build.get_object("savebutton").connect('clicked', lambda x:
-                                               self.save_config(build))
         build.get_object("log_path").set_text(self.conf.get(C, "log_path"))
         if self.conf.get(C, "log_enabled") == "True":
             build.get_object("logbutton").set_active(True)
@@ -134,7 +129,14 @@ class Fileorganizer(GObject.Object, Peas.Activatable, PeasGtk.Configurable):
             build.get_object("previewbutton").set_active(True)
         if self.conf.get(C, "strip_ntfs") == "True":
             build.get_object("ntfsbutton").set_active(True)
-        window.show_all()
+
+        build.get_object("logbutton").connect('clicked', lambda x: self.save_config(build))
+        build.get_object("log_path").connect('changed', lambda x: self.save_config(build))
+        build.get_object("cleanupbutton").connect('clicked', lambda x: self.save_config(build))
+        build.get_object("removebutton").connect('clicked', lambda x: self.save_config(build))
+        build.get_object("previewbutton").connect('clicked', lambda x: self.save_config(build))
+        build.get_object("ntfsbutton").connect('clicked', lambda x: self.save_config(build))
+
         return window
 
     def save_config(self, builder):
