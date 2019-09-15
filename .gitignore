@@ -26,4 +26,7 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
+#Geany
+*.geany
+
 fo.conf
