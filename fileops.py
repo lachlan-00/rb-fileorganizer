@@ -90,10 +90,10 @@ class MusicFile(object):
             self.entry = db_entry
             self.rbdb_rep = ('%28', '%29', '%2B', '%27', '%2C', '%3A', '%21',
                              '%24', '%26', '%2A', '%2C', '%2D', '%2E', '%3D',
-                             '%40', '%5F', '%7E', '%C3%A8')
+                             '%40', '%5F', '%7E')
             self.rbdb_itm = ('(', ')', '+', "'", ',', ':', '!',
                              '$', '&', '*', ',', '-', '.', '=',
-                             '@', '_', '~', 'è')
+                             '@', '_', '~')
 
     def set_ascii(self, string):
         """ Change unicode codes back to ascii for RhythmDB
