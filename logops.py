@@ -11,37 +11,33 @@
 
 
 import os
-import codecs
-import configparser
+
+import paths
+
+
+MAX_SIZE = 1076072
 
 
 class LogFile(object):
     """ Log file actions. Open, create and edit log files """
-    def __init__(self):
-        self.conf = configparser.RawConfigParser()
-        conffile = (os.getenv('HOME') + '/.local/share/rhythmbox/' +
-                    'plugins/fileorganizer/fo.conf')
-        self.conf.read(conffile)
+
+    def __init__(self, settings):
+        self.settings = settings
 
     # Write to log file
     def log_processing(self, logmessage):
         """ Perform log operations """
-        log_enabled = self.conf.get('conf', 'log_enabled')
-        log_filename = self.conf.get('conf', 'log_path')
-        log_filename = os.getenv('HOME') + '/' + log_filename
-        # Log if Enabled
-        if log_enabled == 'True':
-            # Create if missing
+        if not self.settings['log-enabled']:
+            return
+        log_filename = paths.user_file(self.settings['log-path'])
+        try:
+            # Create if missing, and start over once it gets too big
             if (not os.path.exists(log_filename) or
-                    os.path.getsize(log_filename) >= 1076072):
-                files = codecs.open(log_filename, "w", "utf8")
-                files.close()
-            files = codecs.open(log_filename, "a", "utf8")
-            try:
-                logline = [logmessage]
-                files.write((u"".join(logline)) + u"\n")
-            except UnicodeDecodeError:
-                print('LOG UNICODE ERROR')
-                logline = [logmessage.decode('utf-8')]
-                files.write((u"".join(logline)) + u"\n")
-            files.close()
+                    os.path.getsize(log_filename) >= MAX_SIZE):
+                with open(log_filename, 'w', encoding='utf-8'):
+                    pass
+            with open(log_filename, 'a', encoding='utf-8') as logfile:
+                logfile.write(logmessage + '\n')
+        except OSError as error:
+            print('fileorganizer: cannot write %s (%s)' % (log_filename,
+                                                           error))

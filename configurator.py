@@ -21,8 +21,8 @@ RHYTHMBOX_LIBRARY = {'layout-path', 'layout-filename'}
 class FileorganizerConf(object):
     """ Class to read RB values using dconf/gsettings """
     def __init__(self):
-        self.rhythmdbsettings = Gio.Settings("org.gnome.rhythmbox.rhythmdb")
-        self.librarysettings = Gio.Settings("org.gnome.rhythmbox.library")
+        self.rhythmdbsettings = Gio.Settings.new("org.gnome.rhythmbox.rhythmdb")
+        self.librarysettings = Gio.Settings.new("org.gnome.rhythmbox.library")
 
     # Request value
     def get_val(self, key):

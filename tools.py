@@ -11,7 +11,8 @@
 """
 
 import os
-import subprocess
+
+from gi.repository import Gio, GLib
 
 import fileops
 
@@ -32,14 +33,19 @@ def library_location(files, library_locations):
 
 
 # Create a folder inside a library path if non-existent, and return it
-def folderize(library_path, folder):
-    """ Create folders for file operations """
-    dirpath = library_path + '/'
-    # Strip full stops from paths
-    folder = folder.replace('/.', '/_')
-    if not os.path.exists(dirpath + folder):
-        os.makedirs(dirpath + folder)
-    return os.path.normpath(dirpath + folder)
+def folderize(library_path, folder, create=True):
+    """ Build the destination folder inside the library path
+
+    Full stops leading a component are replaced so that a metadata value
+    cannot turn a folder into a hidden one. Pass create=False to work the
+    path out without making anything, which is what preview mode needs.
+    """
+    parts = [('_' + part[1:]) if part.startswith('.') else part
+             for part in folder.split('/') if part]
+    dirpath = os.path.normpath(os.path.join(library_path, *parts))
+    if create and not os.path.exists(dirpath):
+        os.makedirs(dirpath)
+    return dirpath
 
 
 # Replace the placeholders with the correct values
@@ -79,12 +85,19 @@ def process(string, strip_ntfs=False):
 
 
 def results(prelist, damlist):
-    """ Show the results of your preview run """
-    if not os.stat(prelist)[6] == 0:
-        print('fileorganizer: open preview list')
-        subprocess.Popen(['/usr/bin/xdg-open', prelist])
-    if not os.stat(damlist)[6] == 0:
-        print('fileorganizer: open damaged file list')
-        subprocess.Popen(['/usr/bin/xdg-open', damlist])
-    return
+    """ Show the results of your preview run
 
+    Handed to the desktop rather than to /usr/bin/xdg-open: inside a
+    flatpak that call goes through the OpenURI portal, and the report is
+    somewhere the host can open.
+    """
+    for report in (prelist, damlist):
+        if not os.path.exists(report) or os.path.getsize(report) == 0:
+            continue
+        print('fileorganizer: open ' + report)
+        try:
+            Gio.AppInfo.launch_default_for_uri(
+                Gio.File.new_for_path(report).get_uri(), None)
+        except GLib.Error as error:
+            print('fileorganizer: could not open %s (%s)' % (report, error))
+    return

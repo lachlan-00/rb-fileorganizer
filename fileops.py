@@ -13,17 +13,15 @@
 import os
 import shutil
 import time
-import configparser
 import gi
-import urllib.parse
 
 gi.require_version('RB', '3.0')
 
+from gi.repository import Gio
 from gi.repository import RB
 
+import paths
 import tools
-
-from logops import LogFile
 
 
 RB_METATYPES = ('at', 'aa', 'aA', 'as', 'aS', 'ay', 'an', 'aN', 'ag', 'aG',
@@ -39,6 +37,10 @@ PROP = [RB.RhythmDBPropType.ALBUM, RB.RhythmDBPropType.ALBUM_ARTIST,
         RB.RhythmDBPropType.TRACK_NUMBER, RB.RhythmDBPropType.TITLE,
         RB.RhythmDBPropType.ARTIST, RB.RhythmDBPropType.ARTIST_FOLDED]
 
+PREVIEW_LOG = '.fileorganizer-preview.log'
+DAMAGED_LOG = '.fileorganizer-damaged.log'
+BACKUP_FOLDER = 'backup'
+
 IN = '    IN:    '
 OUT = '    OUT:   '
 INFO = ' ** INFO:  '
@@ -47,24 +49,55 @@ CONFLICT = ' ** CONFLICT: '
 NO_NEED = 'No need for file relocation'
 STILL_MEDIA = 'Directory still contains media; keeping:'
 FILE_EXISTS = 'File exists, directing to backup folder'
-POSSIBLE_DAMAGE = "Source file damaged or missing tag information.\n"
+POSSIBLE_DAMAGE = 'Source file damaged or missing tag information.'
 DIR_REMOVED = 'Removing empty directory'
 UPDATING = 'Updating Database:'
+
+
+def uri_to_path(uri):
+    """ Filesystem path for a location as RhythmDB stores it
+
+    None when the location is not a local file, an http stream say.
+    """
+    return Gio.File.new_for_uri(uri).get_path()
+
+
+def path_to_uri(path):
+    """ Location for a filesystem path
+
+    Rhythmbox builds the locations it stores with g_file_get_uri, so going
+    back through GFile is what makes the two match. Escaping the path by
+    hand cannot: the plugin used to percent-encode with urllib and then
+    undo eighteen characters one at a time to get close enough, and any
+    path it did not get exactly right left the entry pointing at nothing.
+    """
+    return Gio.File.new_for_path(path).get_uri()
+
+
+def unique_path(path):
+    """ The path itself, or the first free '<name>N<.ext>' beside it """
+    if not os.path.exists(path):
+        return path
+    stem, extension = os.path.splitext(path)
+    counter = 1
+    while os.path.exists('%s%d%s' % (stem, counter, extension)):
+        counter += 1
+    return '%s%d%s' % (stem, counter, extension)
 
 
 class MusicFile(object):
     """ Class that performs all the file operations """
 
-    def __init__(self, fileorganizer, db_entry=None, strip_ntfs=False):
-        self.conf = configparser.RawConfigParser()
-        conffile = (os.getenv('HOME') + '/.local/share/rhythmbox/' +
-                    'plugins/fileorganizer/fo.conf')
-        self.conf.read(conffile)
+    def __init__(self, fileorganizer, db_entry=None):
         self.rbfo = fileorganizer
         self.rbdb = self.rbfo.rbdb
-        self.log = LogFile()
-        # self.url = UrlData()
-        self.strip_ntfs = strip_ntfs
+        self.settings = self.rbfo.settings
+        self.log = self.rbfo.log
+        self.strip_ntfs = self.settings['strip-ntfs']
+        self.library = None
+        self.metadata = {}
+        self.location = None
+        self.entry = None
         if db_entry:
             # Track and disc digits from gconf
             padded = '%s' % ('%0' + str(2) + '.d')
@@ -88,24 +121,21 @@ class MusicFile(object):
             }
             self.location = db_entry.get_string(RB.RhythmDBPropType.LOCATION)
             self.entry = db_entry
-            self.rbdb_rep = ('%28', '%29', '%2B', '%27', '%2C', '%3A', '%21',
-                             '%24', '%26', '%2A', '%2C', '%2D', '%2E', '%3D',
-                             '%40', '%5F', '%7E', '%C3%A8')
-            self.rbdb_itm = ('(', ')', '+', "'", ',', ':', '!',
-                             '$', '&', '*', ',', '-', '.', '=',
-                             '@', '_', '~', 'è')
+            self.library = self.find_library()
 
-    def set_ascii(self, string):
-        """ Change unicode codes back to ascii for RhythmDB
-        RythmDB doesn't use a full URL for file path
+    def find_library(self):
+        """ Local path of the library location holding this file
+
+        Worked out once, from the location the file started at: the backup
+        folder and the empty folder cleanup both have to stay inside the
+        library the file came from.
         """
-        count = 0
-        while count < len(self.rbdb_rep):
-            string = string.replace(self.rbdb_rep[count],
-                                    self.rbdb_itm[count])
-            count += 1
-
-        return string
+        locations = self.rbfo.configurator.get_val('locations')
+        try:
+            library = tools.library_location(self, locations)
+        except tools.LibraryLocationError:
+            return None
+        return uri_to_path(library)
 
     # Returns metadata of the music file
     def get_metadata(self, key):
@@ -114,157 +144,162 @@ class MusicFile(object):
             if key == datum:
                 return self.metadata[datum]
 
-    # Non media clean up
-    def file_cleanup(self, source, destin):
-        """ Remove empty folders and move non-music files with selection """
-        cleanup_enabled = self.conf.get('conf', 'cleanup_enabled')
-        remove_folders = self.conf.get('conf', 'cleanup_empty_folders')
-        if cleanup_enabled == 'True':
-            sourcedir = os.path.dirname(source)
-            destindir = os.path.dirname(destin)
-            foundmedia = False
-            # Remove empty folders, if any
-            if os.path.isdir(sourcedir):
-                if not os.listdir(sourcedir) == []:
-                    for files in os.listdir(sourcedir):
-                        filelist = files[(files.rfind('.')):]
-                        if filelist in RB_MEDIA_TYPES or os.path.isdir(
-                                                sourcedir + '/' + files):
-                            foundmedia = True
-                        elif not destindir == sourcedir:
-                            mvdest = destindir + '/' + os.path.basename(files)
-                            mvsrc = sourcedir + '/' + os.path.basename(files)
-                            try:
-                                shutil.move(mvsrc, mvdest)
-                            except FileNotFoundError:
-                                self.log.log_processing(ERROR + 'Moving ' +
-                                                        files)
-                            except PermissionError:
-                                self.log.log_processing(ERROR + 'Moving ' +
-                                                        files)
-                            except Exception as e:
-                                self.log.log_processing(ERROR + 'Moving ' +
-                                                        files)
-                                print(e)
-                            finally:
-                                self.log.log_processing(INFO + 'Moved')
-                                self.log.log_processing('    ' + mvdest)
-                    if foundmedia:
-                        self.log.log_processing(INFO + STILL_MEDIA)
-                # remove empty folders after moving additional files
-                if os.listdir(sourcedir) == [] and remove_folders == 'True':
-                    currentdir = sourcedir
-                    self.log.log_processing(INFO + DIR_REMOVED)
-                    while not os.listdir(currentdir):
-                        self.log.log_processing('    ' + currentdir)
-                        os.rmdir(currentdir)
-                        currentdir = os.path.split(currentdir)[0]
+    def source_path(self):
+        """ Filesystem path the database entry points at """
+        return uri_to_path(self.location)
 
-    # Get Source and Destination separately so preview can use the same code
-    def get_locations(self, inputstring):
-        """ Get file path for other file operations """
-        # Get source for comparison
-        source = self.location.replace('file:///', '/')
-        if inputstring == 'source':
-            return urllib.parse.unquote(source)
-        # Set Destination Directory
-        targetdir = '/' + self.rbfo.configurator.get_val('layout-path')
-        targetdir = tools.data_filler(self, targetdir,
-                                      strip_ntfs=self.strip_ntfs)
-        targetloc = self.rbfo.configurator.get_val('locations')[0]
-        targetpath = targetloc.replace('file:///', '/')
-        targetdir = tools.folderize(targetpath, targetdir)
-        # Set Destination  Filename
-        targetname = self.rbfo.configurator.get_val('layout-filename')
-        targetname = tools.data_filler(self, targetname,
+    def target_path(self, create=True):
+        """ Filesystem path the Rhythmbox layout settings ask for
+
+        Pass create=False to work it out without making the folders, which
+        is what preview mode needs.
+        """
+        if not self.library:
+            raise tools.LibraryLocationError(
+                'No local library location for ' + str(self.location))
+        layout = tools.data_filler(self,
+                                   self.rbfo.configurator.get_val(
+                                       'layout-path'),
+                                   strip_ntfs=self.strip_ntfs)
+        targetdir = tools.folderize(self.library, layout, create=create)
+        targetname = tools.data_filler(self,
+                                       self.rbfo.configurator.get_val(
+                                           'layout-filename'),
                                        strip_ntfs=self.strip_ntfs)
-        targetname += os.path.splitext(self.location)[1]
-        # Join destination
-        if inputstring == 'destin':
-            return urllib.parse.unquote((os.path.join(targetdir, targetname)))
-        return
+        targetname += os.path.splitext(self.source_path())[1]
+        return os.path.join(targetdir, targetname)
+
+    def backup_path(self, destin):
+        """ Free path under <library>/backup/ for a name already in use """
+        folder = tools.folderize(self.library, BACKUP_FOLDER)
+        return unique_path(os.path.join(folder, os.path.basename(destin)))
+
+    def log_header(self):
+        """ First line of a log entry: the track, then the time """
+        stamp = time.strftime("%I:%M:%S %p", time.localtime())
+        return tools.data_filler(self, '%ta - %at - ',
+                                 strip_ntfs=self.strip_ntfs) + stamp
 
     def preview(self):
         """ Running in preview mode does not change files in any way """
-        print('preview')
-        previewlist = os.getenv('HOME') + '/.fileorganizer-preview.log'
-        damagedlist = os.getenv('HOME') + '/.fileorganizer-damaged.log'
-        source = self.get_locations('source')
-        destin = urllib.parse.unquote(self.get_locations('destin'))
-        if not source == destin:
-            # Write to preview list
-            logfile = open(previewlist, "a")
-            logfile.write("Change Found:\n" + source + "\n")
-            logfile.write(destin + "\n\n")
-            logfile.close()
+        source = self.source_path()
+        try:
+            destin = self.target_path(create=False)
+        except (tools.LibraryLocationError, OSError) as error:
+            self.report(DAMAGED_LOG, POSSIBLE_DAMAGE + '\n' +
+                        str(source) + '\n' + str(error) + '\n')
+            return
+        if source == destin:
+            return
+        self.report(PREVIEW_LOG, 'Change Found:\n' + source + '\n' +
+                    destin + '\n')
+
+    @staticmethod
+    def report(name, text):
+        """ Append a paragraph to one of the preview reports """
+        with open(paths.user_file(name), 'a', encoding='utf-8') as report:
+            report.write(text + '\n')
 
     # Moves the file to a specific location with a specific name
     def relocate(self):
-        """Performs the actual moving.
+        """ Performs the actual moving.
         -Move file to correct place
         -Update file location in RB database.
-        """
-        source = self.get_locations('source')
-        destin = urllib.parse.unquote(self.get_locations('destin'))
-        # Begin Log File
-        tmptime = time.strftime("%I:%M:%S %p", time.localtime())
-        logheader = '%ta - %at - '
-        logheader = (tools.data_filler(self, logheader,
-                                       strip_ntfs=self.strip_ntfs) + tmptime)
-        # self.log = LogFile()
-        self.log.log_processing(logheader)
-        self.log.log_processing((IN + source))
 
+        The database is only ever pointed at a path a move has just
+        produced. Updating it for a move that did not happen is what left
+        entries showing as missing while the file sat where it started.
+        """
+        source = self.source_path()
+        self.log.log_processing(self.log_header())
+        self.log.log_processing(IN + str(source))
+        try:
+            destin = self.target_path()
+        except (tools.LibraryLocationError, OSError) as error:
+            self.log.log_processing(ERROR + str(error))
+            self.log.log_processing('')
+            return
         # Relocate, if necessary
         if source == destin:
-            print('No need for file relocation')
+            print(NO_NEED)
             self.log.log_processing(INFO + NO_NEED)
-        else:
-            if os.path.isfile(destin):
-                # Copy the existing file to a backup dir
-                tmpdir = (self.rbfo.configurator.get_val('locations'))[0].replace('file:///', '/')
-                tmpdir = urllib.parse.unquote(tmpdir)
-                backupdir = tools.folderize(tmpdir, 'backup/')
-                backup = os.path.join(backupdir, os.path.basename(destin))
-                if os.path.isfile(backup):
-                    counter = 0
-                    backuptest = backup
-                    while os.path.isfile(backup):
-                        backup = backuptest
-                        counter += 1
-                        backup = (backup[:(backup.rfind('.'))] + str(counter) +
-                                  backup[(backup.rfind('.')):])
-                    try:
-                        os.makedirs(os.path.dirname(backupdir))
-                    except OSError:
-                        pass
-                    try:
-                        shutil.move(source, backup)
-                        self.log.log_processing(CONFLICT + FILE_EXISTS)
-                        self.log.log_processing(OUT + backup)
-                    except FileNotFoundError:
-                        # we found a duplicate in the DB
-                        pass
-                destin = backup
-            else:
-                # Move the file to desired destination
-                shutil.move(source, destin)
-                self.log.log_processing(OUT + destin)
-
-            # Update Rhythmbox database
-            self.location = urllib.parse.quote(destin)
-            self.location = ('file://' + self.location)
-            self.location = self.set_ascii(self.location)
-            print('Relocating file \n%s to\n%s' % (source, destin))
-            self.log.log_processing(INFO + UPDATING)
-            print(self.entry.get_string(RB.RhythmDBPropType.LOCATION))
-            print(self.location)
-            self.log.log_processing(IN + self.entry.get_string(RB.RhythmDBPropType.LOCATION))
-            self.log.log_processing(OUT + self.location)
-            # Make the change
-            self.rbdb.entry_set(self.entry,
-                                RB.RhythmDBPropType.LOCATION,
-                                self.location)
-            # Non media clean up
-            self.file_cleanup(source, destin)
+            self.log.log_processing('')
+            return
+        try:
+            if os.path.exists(destin):
+                # Send this file to the backup dir rather than overwrite
+                destin = self.backup_path(destin)
+                self.log.log_processing(CONFLICT + FILE_EXISTS)
+            shutil.move(source, destin)
+        except (OSError, shutil.Error) as error:
+            # leave the entry alone; it still points at the file
+            self.log.log_processing(ERROR + str(error))
+            self.log.log_processing('')
+            return
+        self.log.log_processing(OUT + destin)
+        # Update Rhythmbox database
+        location = path_to_uri(destin)
+        print('Relocating file \n%s to\n%s' % (source, destin))
+        self.log.log_processing(INFO + UPDATING)
+        self.log.log_processing(IN + self.location)
+        self.log.log_processing(OUT + location)
+        # Make the change
+        self.rbdb.entry_set(self.entry,
+                            RB.RhythmDBPropType.LOCATION,
+                            location)
+        # Non media clean up
+        self.file_cleanup(source, destin)
+        self.location = location
         self.log.log_processing('')
+
+    # Non media clean up
+    def file_cleanup(self, source, destin):
+        """ Remove empty folders and move non-music files with selection """
+        if not self.settings['cleanup-enabled']:
+            return
+        sourcedir = os.path.dirname(source)
+        destindir = os.path.dirname(destin)
+        if not os.path.isdir(sourcedir):
+            return
+        foundmedia = False
+        for name in os.listdir(sourcedir):
+            current = os.path.join(sourcedir, name)
+            extension = os.path.splitext(name)[1].lower()
+            if extension in RB_MEDIA_TYPES or os.path.isdir(current):
+                foundmedia = True
+            elif not destindir == sourcedir:
+                target = os.path.join(destindir, name)
+                try:
+                    shutil.move(current, target)
+                except (OSError, shutil.Error) as error:
+                    self.log.log_processing(ERROR + 'Moving ' + name)
+                    self.log.log_processing('    ' + str(error))
+                else:
+                    self.log.log_processing(INFO + 'Moved')
+                    self.log.log_processing('    ' + target)
+        if foundmedia:
+            self.log.log_processing(INFO + STILL_MEDIA)
+        if self.settings['cleanup-empty-folders']:
+            self.remove_empty_folders(sourcedir)
+
+    def remove_empty_folders(self, folder):
+        """ Drop the emptied folder, then its parents while they are empty
+
+        The walk stops below the library location. Without that guard an
+        emptied library root is removed too and the walk carries on up
+        towards the home folder.
+        """
+        if not self.library:
+            return
+        library = os.path.normpath(self.library)
+        current = os.path.normpath(folder)
+        while (current.startswith(library + os.sep) and
+               os.path.isdir(current) and not os.listdir(current)):
+            try:
+                os.rmdir(current)
+            except OSError as error:
+                self.log.log_processing(ERROR + str(error))
+                return
+            self.log.log_processing(INFO + DIR_REMOVED)
+            self.log.log_processing('    ' + current)
+            current = os.path.dirname(current)

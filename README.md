@@ -7,33 +7,27 @@ Hi everyone, I took over this plugin many years ago and have since moved on to o
 RHYTHMBOX FILEORGANIZER
 =======================
 
-Please help with testing this new release!
-A lot of big changes have happened  that need testing before i can be comfortable with a stable release.
+Welcome to version 4.0.0
 
--------------------------------------
-WARNING, ONGOING DEVELOPMENT VERSION.
--------------------------------------
+This update fixes the bug that left files showing as 'missing' after a move,
+moves the plugin settings into gsettings, and adds a Flatpak install.
 
- * Please be aware that for the moment this repo may have bugs
-   that i haven't noticed in my testing.
- * I have tested all current features and they work as expected
-   (But that isn't a promise it will be stable for you)
+It is a new major version because two of those are breaking changes: fo.conf
+is gone (its contents are imported once and the file renamed), and install.py
+and uninstall.py have been replaced by setup.py.
 
-Welcome to version 3.91-dev
+The 'missing files' report from 3.91 had two causes, both fixed:
 
-This update removes a lot of code that doesn't have any real purpose in the current rhythmbox.
-
-I have dropped dbops.py and simplified the database naming using urllib.parse.
-
-We no longer look for cover art as this has changed from older versions of rhythmbox.
-
-Instead of updating tags this feature is removed.
-
-So far in testing the changes are setting correct paths but the files are sometimes becoming 'missing'
-The files move and update but I think this may be due to my large library (180,000)
-and that testing has been done over sshfs as well as local files.
-
-
+ * When a file of the same name was already at the destination, the plugin
+   sent the source to the backup folder. On the first collision for a given
+   name it did not actually move anything, but still pointed the database at
+   the backup path it had not created. The file stayed where it was and the
+   entry went missing. The database is now only ever updated to a path a
+   move has just produced.
+ * Locations were percent-encoded by hand and then partly un-escaped again
+   from a hardcoded list of eighteen characters. One of them turned every
+   'è' in a path into a location Rhythmbox could not match. Paths now go
+   through GFile, which is what Rhythmbox itself builds locations with.
 
 
 1.0 Install
@@ -42,27 +36,46 @@ and that testing has been done over sshfs as well as local files.
 3.0 Configuration and customisation
 3.1 Compilation Support
 3.2 Plugin Preferences Window
-4.0 Change History
-5.0 Contribute
-6.0 Links
+4.0 Flatpak
+5.0 Change History
+6.0 Contribute
+7.0 Links
 
 1.0 INSTALL
 -----------
 
-To install from the terminal using make:
-make install
+For a per-user install (no root needed, the usual choice):
 
-To check the dependencies, then install using python:
-python3 ./install.py
+    python3 ./setup.py install --user-plugin
 
-If you want to install manually, extract to the following directory:
+or the same thing through make:
+
+    make install
+
+That copies the plugin to
+
  * $HOME/.local/share/rhythmbox/plugins/fileorganizer/
 
+puts the settings schema in $HOME/.local/share/glib-2.0/schemas/ and compiles
+it. For a system-wide install instead:
+
+    python3 ./setup.py install
+
+To install without compiling the schemas, add --no-glib-compile-schemas to
+any of the above. **The schema has to be compiled somewhere GLib looks or the
+plugin will refuse to activate** - it prints a message saying so rather than
+starting up without its settings.
+
+To remove it again:
+
+    make uninstall
+
 You can test python dependencies by running:
-python3 -c "import depends_test; depends_test.check()"
+
+    python3 -c "import depends_test; depends_test.check()"
 
 Possible extra requirements are:
- * python-configparser (I have to confirm this but i think it's a default module in python 3.2+)
+
  * gir1.2-notify-0.7 (Debian name, GObject notify library)
  * dconf-editor (to make changes to the rhythmbox library settings)
 
@@ -91,6 +104,7 @@ Move all non music files with your music:
 Log file for all actions:
  * The log file is an invaluable tool to see what happens when running fileorganizer. 
  * By default this file is hidden in your home folder: $HOME/.fileorganizer.log
+ * Under Flatpak it goes to the application's own data folder instead; see 4.0.
 
 
 3.0 CONFIGURATION AND CUSTOMISATION
@@ -104,7 +118,8 @@ The output when running 'Organize Selection' is set from dconf-editor using defa
 Using these, your final output becomes:
  * library + layout-path + layout-filename
 
-The Locations setting can actually be multiple locations, the first value is always taken by the plugin.
+The Locations setting can actually be multiple locations. The plugin uses the
+one your file is already inside, and the first one otherwise.
 
 The Variables for layout_path and layout_filename follow the same values as rhythmbox:
  * %at -- album title
@@ -140,27 +155,97 @@ Fileorganizer will use the album artist tag which is a part of rhythmbox and rep
 3.2 PLUGIN PREFERENCES WINDOW
 
 The preferences window gives you the ability to switch features on or off.
+They are stored in gsettings under
+
+   org.gnome.rhythmbox.plugins.fileorganizer
+
+so dconf-editor can reach them too, and there is no longer a fo.conf file. An
+fo.conf left over from an older version is imported the first time the plugin
+starts and then renamed to fo.conf.migrated.
 
 Preview Mode
  * If enabled, 'Organize Selection' will only check for changes and open a text report after completion.
+ * Nothing is moved and no folders are created.
 
 File/Folder Cleanup
  * If enabled, files within the same folder that aren't music files are moved as well
 
 Remove Empty Folders
  * If the source folder is empty after moving, delete the folder
+ * Empty parent folders go too, stopping below your library location.
 
 Log File:
  * Set the filename of the log file (the base path is your home folder)
+ * An absolute path is used as given.
 
 Strip NTFS Chars
  * Strip out characters that Windows can't handle.
    (NTFS actually supports more characters than Windows allows)
 
 
+4.0 FLATPAK
+-----------
 
-4.0 CHANGE HISTORY
+A Flatpak Rhythmbox cannot see the folders above; it has its own data
+directory under ~/.var/app. Install into it with
+
+    python3 ./setup.py install --flatpak
+
+or
+
+    make install-flatpak
+
+which copies the plugin to
+
+   ~/.var/app/org.gnome.Rhythmbox3/data/rhythmbox/plugins/fileorganizer/
+
+and the schema to
+
+   ~/.var/app/org.gnome.Rhythmbox3/data/glib-2.0/schemas/
+
+then compiles it with the runtime's own glib-compile-schemas, falling back to
+the host's. It needs no root. For a differently named flatpak, name it:
+
+    python3 ./setup.py install --flatpak=org.gnome.Rhythmbox3.Devel
+
+**The sandbox can only see the folders it has been given.** org.gnome.Rhythmbox3
+ships with `--filesystem=xdg-music`, so out of the box the plugin can only
+organize files under ~/Music. If your library lives anywhere else, Rhythmbox
+cannot read it and neither can this plugin. Grant it with
+
+    flatpak override --user --filesystem=/path/to/your/music org.gnome.Rhythmbox3
+
+or tick the folder in Flatseal. Without that a move fails with a permission
+error, which is written to the log rather than being allowed to update the
+database.
+
+The log and the preview reports do **not** go to your home folder under
+Flatpak. $HOME inside the sandbox is an empty temporary filesystem that
+accepts writes and throws them away when the app closes, so they would be
+lost silently. They go to
+
+   ~/.var/app/org.gnome.Rhythmbox3/data/rhythmbox/fileorganizer/
+
+which you can still read from outside the sandbox. The preview report is
+opened through the desktop portal.
+
+
+5.0 CHANGE HISTORY
 ------------------
+
+4.0.0
+ * Fixed the database being updated for a move that did not happen, which is
+   what left entries showing as missing.
+ * Locations are built with GFile instead of by hand; the hardcoded escape
+   list is gone.
+ * Plugin settings moved from fo.conf to gsettings, with a one-time import.
+ * Added a Flatpak install, and log/report paths that survive the sandbox.
+ * Preview mode no longer creates the destination folders.
+ * Empty folder cleanup stops at the library location instead of walking up
+   past it.
+ * A failed move is logged and skipped rather than raising.
+ * The right-click item is now removed again when the plugin is disabled.
+ * install.py and uninstall.py replaced by setup.py.
 
 3.99*-dev-*
  * Removed tag update options and code
@@ -223,13 +308,13 @@ Update Tags After Relocation
  * Added $disc and $year support.
 
 
-5.0 CONTRIBUTE
+6.0 CONTRIBUTE
 --------------
 
 To contribute, please refer to our github page [2]
 
 
-6.0 LINKS
+7.0 LINKS
 ---------
 
 [1] http://code.launchpad.net/~lachlan-00/rb-fileorganizer/legacy

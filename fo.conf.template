@@ -1,8 +1,0 @@
-[conf]
-cleanup_empty_folders = True
-cleanup_enabled = True
-log_path = .fileorganizer.log
-log_enabled = True
-preview_mode = False
-strip_ntfs = False
-

@@ -1,0 +1,34 @@
+<schemalist>
+  <schema id="org.gnome.rhythmbox.plugins.fileorganizer" path="/org/gnome/rhythmbox/plugins/fileorganizer/">
+    <key name="preview-mode" type="b">
+      <default>false</default>
+      <summary>Preview Mode</summary>
+      <description>Report the changes 'Organize Selection' would make instead of moving anything. The report is written next to the log file and opened when the run finishes.</description>
+    </key>
+    <key name="cleanup-enabled" type="b">
+      <default>true</default>
+      <summary>File/Folder Cleanup</summary>
+      <description>Move the non-music files sitting beside a track, such as artwork and text files, to wherever the track is moved.</description>
+    </key>
+    <key name="cleanup-empty-folders" type="b">
+      <default>true</default>
+      <summary>Remove Empty Folders</summary>
+      <description>Delete the folder a track came from once it is empty, and any empty parents up to but never including the library location.</description>
+    </key>
+    <key name="strip-ntfs" type="b">
+      <default>false</default>
+      <summary>Strip NTFS Chars</summary>
+      <description>Remove the characters Windows does not allow in a filename, and trailing full stops, when building paths.</description>
+    </key>
+    <key name="log-enabled" type="b">
+      <default>true</default>
+      <summary>Log File</summary>
+      <description>Record every file operation to the log file.</description>
+    </key>
+    <key name="log-path" type="s">
+      <default>'.fileorganizer.log'</default>
+      <summary>Log file name</summary>
+      <description>An absolute path, or a name resolved against your home folder. Under Flatpak, where the home folder is not writable, a relative name is resolved against the application's own data directory instead.</description>
+    </key>
+  </schema>
+</schemalist>
